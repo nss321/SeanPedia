@@ -6,8 +6,17 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		1100FC592D43F325004A4658 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 1100FC582D43F325004A4658 /* Kingfisher */; };
+		1100FC5C2D43F331004A4658 /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = 1100FC5B2D43F331004A4658 /* Then */; };
+		1100FC5F2D43F33D004A4658 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1100FC5E2D43F33D004A4658 /* SnapKit */; };
+		1100FC622D43F34A004A4658 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 1100FC612D43F34A004A4658 /* Alamofire */; };
+		1100FC6B2D43FC0B004A4658 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 1100FC6A2D43FC04004A4658 /* .gitignore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		1100FC3C2D43F1EE004A4658 /* SeanPedia.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SeanPedia.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1100FC6A2D43FC04004A4658 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -36,6 +45,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1100FC5F2D43F33D004A4658 /* SnapKit in Frameworks */,
+				1100FC622D43F34A004A4658 /* Alamofire in Frameworks */,
+				1100FC592D43F325004A4658 /* Kingfisher in Frameworks */,
+				1100FC5C2D43F331004A4658 /* Then in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -45,6 +58,7 @@
 		1100FC332D43F1EE004A4658 = {
 			isa = PBXGroup;
 			children = (
+				1100FC6A2D43FC04004A4658 /* .gitignore */,
 				1100FC3E2D43F1EE004A4658 /* SeanPedia */,
 				1100FC3D2D43F1EE004A4658 /* Products */,
 			);
@@ -78,6 +92,10 @@
 			);
 			name = SeanPedia;
 			packageProductDependencies = (
+				1100FC582D43F325004A4658 /* Kingfisher */,
+				1100FC5B2D43F331004A4658 /* Then */,
+				1100FC5E2D43F33D004A4658 /* SnapKit */,
+				1100FC612D43F34A004A4658 /* Alamofire */,
 			);
 			productName = SeanPedia;
 			productReference = 1100FC3C2D43F1EE004A4658 /* SeanPedia.app */;
@@ -107,6 +125,12 @@
 			);
 			mainGroup = 1100FC332D43F1EE004A4658;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				1100FC572D43F325004A4658 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				1100FC5A2D43F331004A4658 /* XCRemoteSwiftPackageReference "Then" */,
+				1100FC5D2D43F33D004A4658 /* XCRemoteSwiftPackageReference "SnapKit" */,
+				1100FC602D43F34A004A4658 /* XCRemoteSwiftPackageReference "Alamofire" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1100FC3D2D43F1EE004A4658 /* Products */;
 			projectDirPath = "";
@@ -122,6 +146,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1100FC6B2D43FC0B004A4658 /* .gitignore in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -148,11 +173,15 @@
 				DEVELOPMENT_TEAM = W43DLLFB4Q;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SeanPedia/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SeanPedia;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleLightContent;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -160,9 +189,13 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sean.SeanPedia;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -176,11 +209,15 @@
 				DEVELOPMENT_TEAM = W43DLLFB4Q;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SeanPedia/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SeanPedia;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleLightContent;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -188,9 +225,13 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sean.SeanPedia;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -335,6 +376,64 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		1100FC572D43F325004A4658 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.1.3;
+			};
+		};
+		1100FC5A2D43F331004A4658 /* XCRemoteSwiftPackageReference "Then" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/devxoul/Then";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
+		1100FC5D2D43F33D004A4658 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.1;
+			};
+		};
+		1100FC602D43F34A004A4658 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.10.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1100FC582D43F325004A4658 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1100FC572D43F325004A4658 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
+		1100FC5B2D43F331004A4658 /* Then */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1100FC5A2D43F331004A4658 /* XCRemoteSwiftPackageReference "Then" */;
+			productName = Then;
+		};
+		1100FC5E2D43F33D004A4658 /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1100FC5D2D43F33D004A4658 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+		1100FC612D43F34A004A4658 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1100FC602D43F34A004A4658 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1100FC342D43F1EE004A4658 /* Project object */;
 }
