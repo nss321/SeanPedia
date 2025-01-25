@@ -10,8 +10,13 @@ import UIKit
 import SnapKit
 import Then
 
-class OnboardingViewController: BaseViewController {
-
+final class OnboardingViewController: BaseViewController {
+    
+    private let onboardingView = OnboardingView()
+    
+    override func loadView() {
+        view = onboardingView
+    }
     
     override func configHierarchy() {
         
