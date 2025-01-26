@@ -30,6 +30,8 @@ final class CustomCTAButton: UIButton {
         config.background.strokeColor = .seanPediaAccent
         config.background.strokeWidth = 1
         configuration = config
+        
+        self.snp.makeConstraints { $0.height.equalTo(36) }
     }
     
     func configButtonInfo(title: String, action: UIAction) {

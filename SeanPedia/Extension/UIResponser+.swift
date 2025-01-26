@@ -8,8 +8,14 @@
 import UIKit
 
 extension UIResponder {
+    
+    /// 12
+    var smallMargin: Int {
+        12
+    }
+
     /// 16
-    var baseMargin: Int {
+    var mediumMargin: Int {
         16
     }
 }

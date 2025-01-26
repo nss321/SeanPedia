@@ -27,6 +27,9 @@ final class OnboardingViewController: BaseViewController {
     }
     
     override func configView() {
-        
+        onboardingView.startButton.configButtonInfo(title: "시작하기", action: UIAction(handler: { UIAction in
+            let vc = ProfileViewController()
+            self.navigationController?.pushViewController(vc, animated: true)
+        }))
     }
 }

@@ -9,3 +9,62 @@ import UIKit
 
 import SnapKit
 import Then
+
+final class ProfileNicknameView: BaseView {
+    private let profileImageView = ProfileCircle(isRepresented: true, diemeter: Int(UIScreen.main.bounds.width) / 4)
+    private let nicknameTextField = UITextField()
+    private let nicknameTextFieldUnderline = UIView()
+    let notiLabel = UILabel()
+    let completeButton = CustomCTAButton()
+    
+    override func configHierarchy() {
+        [/*test2,*/ profileImageView, nicknameTextField, nicknameTextFieldUnderline, notiLabel, completeButton].forEach { addSubview($0) }
+    }
+    
+    override func configLayout() {
+        profileImageView.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.top.equalTo(safeAreaLayoutGuide).inset(20)
+        }
+        nicknameTextField.snp.makeConstraints {
+            $0.top.equalTo(profileImageView.snp.bottom).offset(20)
+            $0.horizontalEdges.equalToSuperview().inset(mediumMargin)
+            $0.height.equalTo(44)
+        }
+        nicknameTextFieldUnderline.snp.makeConstraints {
+            $0.horizontalEdges.equalTo(nicknameTextField)
+            $0.top.equalTo(nicknameTextField.snp.bottom)
+            $0.height.equalTo(1)
+        }
+        notiLabel.snp.makeConstraints {
+            $0.top.equalTo(nicknameTextFieldUnderline.snp.bottom).offset(smallMargin)
+            $0.horizontalEdges.equalTo(nicknameTextFieldUnderline).inset(smallMargin)
+        }
+        completeButton.snp.makeConstraints {
+            $0.top.equalTo(notiLabel.snp.bottom).offset(20)
+            $0.horizontalEdges.equalToSuperview().inset(mediumMargin)
+        }
+    }
+    
+    override func configView() {
+        
+        nicknameTextField.do {
+            $0.attributedPlaceholder = NSAttributedString(string: "닉네임을 입력하세요.", attributes: [.foregroundColor : UIColor.seanPediaGray])
+            $0.font = .systemFont(ofSize: 12)
+            $0.borderStyle = .none
+            $0.backgroundColor = .seanPediaBlack
+            $0.leftViewMode = .always
+            $0.leftView = UIView.init(frame: CGRect(x: 0, y: 0, width: mediumMargin, height: 0))
+            $0.textColor = .seanPediaWhite
+        }
+        
+        nicknameTextFieldUnderline.backgroundColor = .seanPediaWhite
+        
+        notiLabel.do {
+            $0.text = "닉네임에 숫자는 포함할 수 없어요."
+            $0.textColor = .seanPediaAccent
+            $0.font = .systemFont(ofSize: 11)
+        }
+    }
+}
+
