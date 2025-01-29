@@ -8,6 +8,14 @@
 import UIKit
 
 extension UIScreen {
+    
+    /*
+     
+     iPhone 14 pro, 15, 15 pro, 16
+     393 x 852
+     
+     */
+    
     var width: CGFloat {
         UIScreen.main.bounds.width
     }

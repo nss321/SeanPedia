@@ -18,6 +18,10 @@ final class ProfileViewController: BaseViewController {
     override func configView() {
         nicknameView.completeButton.configButtonInfo(title: "완료", action: UIAction(handler: { _ in
             self.nicknameView.configuredProfile()
+            
+            let vc = TabBarController()
+            self.navigationController?.pushNewRootController(root: vc)
+            
         }))
         
         nicknameView.profileImageView.changeAction(gesture: UITapGestureRecognizer(target: self, action: #selector(navigateProfileSettingView)))

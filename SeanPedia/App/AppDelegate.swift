@@ -17,6 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         BaseView.appearance().backgroundColor = .seanPediaBlack
         UINavigationBar.appearance().titleTextAttributes = [.foregroundColor : UIColor.seanPediaWhite]
         UINavigationBar.appearance().tintColor = .seanPediaAccent
+        UITabBar.appearance().tintColor = .seanPediaAccent
         
 //        Thread.sleep(forTimeInterval: 2.0)
         return true
