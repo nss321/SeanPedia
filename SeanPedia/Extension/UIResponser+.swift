@@ -18,4 +18,23 @@ extension UIResponder {
     var mediumMargin: Int {
         16
     }
+    
+    /// 20
+    var largeMargin: Int {
+        20
+    }
+    
+    var screenWidth: CGFloat {
+        UIScreen.main.bounds.width
+    }
+    
+    var screenHeight: CGFloat {
+        UIScreen.main.bounds.height
+    }
+    
+    var profileImageCollectionViewDiemeter: Int {
+        (Int(screenWidth) - largeMargin * 2 - smallMargin * 3) / 4
+    }
+    
+    
 }

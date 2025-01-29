@@ -10,7 +10,7 @@ import UIKit
 import SnapKit
 import Then
 
-class ProfileCircle: BaseView {
+final class ProfileCircle: BaseView {
     
     private let isRepresented: Bool
     private let diemeter: Int
@@ -20,8 +20,24 @@ class ProfileCircle: BaseView {
         }
     }
     
-    private let imageView = UIImageView()
+    private var imageView = UIImageView()
     private let cameraSymbol = UIImageView()
+    
+    private var _selectedImage: String?
+    
+    var selectedImage: String {
+        get {
+            guard let _selectedImage else {
+                print(#function, "no image")
+                return "profile_0"
+            }
+            return _selectedImage
+        }
+        set {
+            _selectedImage = newValue
+            imageView.image = UIImage(named: newValue)
+        }
+    }
     
     /*
      1. stored prop이 모두 초기화 되어 있고, 별도의 init이 없다면 부모의 init을 상속 받음.
@@ -34,7 +50,6 @@ class ProfileCircle: BaseView {
         self.isSelected = isSelected
         super.init(frame: .zero)
     }
-    
     
     override func configHierarchy() {
         [imageView, cameraSymbol].forEach { addSubview($0) }
@@ -55,16 +70,16 @@ class ProfileCircle: BaseView {
     
     override func configView() {
         if isRepresented {
-            
+            isSelected = true
         } else {
-            isUserInteractionEnabled = true
             addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(circleTapped)))
         }
-        
+    
+        isUserInteractionEnabled = true
         alpha = isSelected ? 1.0 : 0.5
         
         imageView.do {
-            $0.image = UIImage(named: "profile_1")
+            $0.image = UIImage(named: selectedImage)
             $0.contentMode = .scaleAspectFill
             $0.clipsToBounds = true
             $0.layer.cornerRadius = CGFloat(diemeter / 2)
@@ -109,4 +124,15 @@ class ProfileCircle: BaseView {
             self.alpha = 0.5
         }
     }
+    
+    func configImage(image: String) {
+        selectedImage = image
+        if let uiimage = UIImage(named: image) {
+            self.imageView.image = uiimage
+        } else {
+            self.imageView.image = UIImage(systemName: "xmark")
+        }
+        gestureRecognizers?.removeAll()
+    }
+    
 }

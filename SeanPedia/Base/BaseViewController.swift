@@ -30,7 +30,7 @@ class BaseViewController: UIViewController {
     }
     
     func configView() {
-        
+        view.backgroundColor = .seanPediaBlack
     }
     
     func configDelegate() {
@@ -38,7 +38,7 @@ class BaseViewController: UIViewController {
     }
     
     func configNavigation() {
-        
+
     }
     
 }

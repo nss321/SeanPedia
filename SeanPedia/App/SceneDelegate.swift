@@ -23,7 +23,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 //        window.rootViewController = UINavigationController(
 //            rootViewController: isAleadyOnboarded ? MainViewController() : OnboardingViewController()
 //        )
-        window.rootViewController = UINavigationController(rootViewController: ProfileViewController())
+        window.rootViewController = UINavigationController(rootViewController: OnboardingViewController())
         
         window.makeKeyAndVisible()
         self.window = window

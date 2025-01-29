@@ -30,6 +30,6 @@ class BaseCollectionView: UICollectionView {
     }
     
     func configView() {
-        
+        backgroundColor = .clear
     }
 }

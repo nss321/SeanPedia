@@ -11,7 +11,7 @@ import SnapKit
 import Then
 
 final class ProfileNicknameView: BaseView {
-    private let profileImageView = ProfileCircle(isRepresented: true, diemeter: Int(UIScreen.main.bounds.width) / 4)
+    let profileImageView = ProfileCircle(isRepresented: true, diemeter: Int(UIScreen.main.bounds.width) / 4)
     private let nicknameTextField = UITextField()
     private let nicknameTextFieldUnderline = UIView()
     let notiLabel = UILabel()
@@ -48,6 +48,8 @@ final class ProfileNicknameView: BaseView {
     
     override func configView() {
         
+        profileImageView.selectedImage = ProfileImage.randomProfile()
+        
         nicknameTextField.do {
             $0.attributedPlaceholder = NSAttributedString(string: "닉네임을 입력하세요.", attributes: [.foregroundColor : UIColor.seanPediaGray])
             $0.font = .systemFont(ofSize: 12)
@@ -65,6 +67,10 @@ final class ProfileNicknameView: BaseView {
             $0.textColor = .seanPediaAccent
             $0.font = .systemFont(ofSize: 11)
         }
+    }
+    
+    func configuredProfile() {
+        print(#function, nicknameTextField.text!, profileImageView.selectedImage)
     }
 }
 
