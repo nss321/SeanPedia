@@ -1,15 +1,15 @@
 //
-//  MyProfileViewController.swift
+//  MyProfileEditViewController.swift
 //  SeanPedia
 //
-//  Created by BAE on 1/30/25.
+//  Created by BAE on 1/31/25.
 //
 
 import UIKit
 
-final class MyProfileViewController: BaseViewController {
+final class MyProfileEditViewController: BaseViewController {
     
-    private let myProfileView = MyProfileView()
+    private let myProfileView = MyProfileEditView()
     
     override func loadView() {
         view = myProfileView

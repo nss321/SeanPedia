@@ -31,5 +31,7 @@ class BaseCollectionView: UICollectionView {
     
     func configView() {
         backgroundColor = .clear
+        showsVerticalScrollIndicator = false
+        showsHorizontalScrollIndicator = false
     }
 }

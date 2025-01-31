@@ -10,7 +10,8 @@ import UIKit
 import SnapKit
 import Then
 
-final class MyProfileView: ProfileEdit {
+final class MyProfileEditView: ProfileEdit {
+    
     
     override func configHierarchy() {
         super.configHierarchy()

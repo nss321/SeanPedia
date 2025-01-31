@@ -47,6 +47,7 @@ final class OnboardingView: BaseView {
         }
         onboardingLabel.do {
             $0.text = "Onboarding"
+            // TODO: Font Descriptor 적용
             $0.font = .italicSystemFont(ofSize: 32)
             $0.textColor = .seanPediaWhite
         }
