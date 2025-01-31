@@ -17,6 +17,9 @@ struct MovieInfo: Decodable {
     let poster_path: String
     let title: String
     let overview: String
+    let vote_average: Double
+    let genre_ids: [Int]
+    let release_date: String
 }
 
 /*
