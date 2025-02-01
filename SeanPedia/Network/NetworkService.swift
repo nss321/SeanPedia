@@ -12,6 +12,7 @@ enum TMDBRequest {
     case trending
     case images(id: Int)
     case credit(id: Int)
+    case search(query: String, page: Int = 1)
     
     var baseURL: String {
         return Urls.baseURL()
@@ -23,8 +24,10 @@ enum TMDBRequest {
             return URL(string: Urls.trending())!
         case let .images(id):
             return URL(string: Urls.images(id: id))!
-        case let .credit(id: id):
+        case let .credit(id):
             return URL(string: Urls.credit(id: id))!
+        case let .search(query, page):
+            return URL(string: Urls.search(query: query, page: page))!
         }
     }
     

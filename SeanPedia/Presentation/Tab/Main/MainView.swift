@@ -19,6 +19,7 @@ final class MainView: BaseView {
     let recentSearchNotiLabel = UILabel()
     let todayMovieLabel = UILabel()
     let todayMovieCollectionView = BaseCollectionView()
+    let noResult = UILabel()
     
     override func configHierarchy() {
         [
@@ -29,6 +30,7 @@ final class MainView: BaseView {
             recentSearchNotiLabel,
             todayMovieLabel,
             todayMovieCollectionView,
+            noResult,
         ].forEach { addSubview($0) }
     }
     
@@ -62,6 +64,9 @@ final class MainView: BaseView {
             $0.top.equalTo(todayMovieLabel.snp.bottom).offset(largeMargin)
             $0.horizontalEdges.equalToSuperview()
             $0.bottom.equalTo(safeAreaLayoutGuide)
+        }
+        noResult.snp.makeConstraints {
+            $0.center.equalTo(recentSearchCollectionView)
         }
     }
     
@@ -108,6 +113,12 @@ final class MainView: BaseView {
             let layout = UICollectionViewFlowLayout()
             layout.scrollDirection = .horizontal
             $0.collectionViewLayout = layout
+        }
+        noResult.do {
+            $0.text = "최근 검색어 내역이 없습니다."
+            $0.font = .systemFont(ofSize: 14)
+            $0.textColor = .seanPediaGray
+            $0.isHidden = true
         }
     }
 }

@@ -59,6 +59,7 @@ final class MovieDetailViewController: BaseViewController {
         movieDetailView.castCollectionView.dataSource = self
         movieDetailView.posterCollectionView.dataSource = self
         movieDetailView.posterCollectionView.delegate = self
+        navigationController?.interactivePopGestureRecognizer?.delegate = self
     }
     
     override func configNavigation() {
@@ -80,6 +81,12 @@ final class MovieDetailViewController: BaseViewController {
                 }
             }),
             menu: nil)
+    }
+}
+
+extension MovieDetailViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return navigationController?.viewControllers.count ?? 0 > 1
     }
 }
 

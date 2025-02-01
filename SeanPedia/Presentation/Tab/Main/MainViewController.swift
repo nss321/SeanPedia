@@ -16,7 +16,7 @@ final class MainViewController: BaseViewController {
         }
     }
     
-    var recentSearchDummy = ["현빈", "스파이더", "해리포터", "소방관", "크리스마스", "아이유"] {
+    var recentSearchDummy: [String] = [] {
         didSet {
             print(#function, recentSearchDummy)
             mainView.recentSearchCollectionView.reloadData()
@@ -29,13 +29,18 @@ final class MainViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        fetchTodayMovieList()
     }
     
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        // TODO: 최근 검색어 페치
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        fetchTodayMovieList()
+        if recentSearchDummy.isEmpty {
+            mainView.recentSearchCollectionView.isHidden = true
+            mainView.noResult.isHidden = false
+        } else {
+            mainView.recentSearchCollectionView.isHidden = false
+            mainView.noResult.isHidden = true
+        }
     }
     
     override func configView() {
@@ -59,10 +64,10 @@ final class MainViewController: BaseViewController {
             title: nil,
             image: UIImage(systemName: "magnifyingglass"),
             primaryAction: UIAction(handler: { _ in
-//                guard let completion = self.dismissCompletion, let selectedImage = self.profileImageSettingView.selectedImage else { fatalError() }
-//                completion(selectedImage)
-//                
                 let vc = SearchViewController()
+                vc.completion = {
+                    self.recentSearchDummy.append($0)
+                }
                 self.navigationController?.pushViewController(vc, animated: true)
             }),
             menu: nil)
@@ -145,7 +150,10 @@ extension MainViewController: UICollectionViewDataSource, UICollectionViewDelega
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         switch collectionView {
         case mainView.recentSearchCollectionView:
-            print(#function/*, collectionView*/)
+            let vc = SearchViewController()
+            vc.keyword = recentSearchDummy[indexPath.item]
+            self.navigationController?.pushViewController(vc, animated: true)
+            
         case mainView.todayMovieCollectionView:
             let vc = MovieDetailViewController()
             vc.selectedMovie = todayMovieList[indexPath.item]

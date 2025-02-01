@@ -12,7 +12,7 @@ struct TodayMovie: Decodable {
     let results: [MovieInfo]
 }
 
-struct MovieInfo: Decodable {
+struct MovieInfo: Decodable, Equatable {
     let id: Int
     let poster_path: String
     let title: String
