@@ -228,7 +228,7 @@ final class MovieDetailView: BaseView {
             if i > 1 {
                 break
             } else {
-                genre.append("\(movie.genre_ids[i])")
+                genre.append("\(Genre.genreId(movie.genre_ids[i]))")
             }
         }
         infoLabel.attributedText = configInfoLabel(date: movie.release_date, voteAvg: movie.vote_average, genre: genre)
