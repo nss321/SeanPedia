@@ -20,6 +20,7 @@ struct MovieInfo: Decodable {
     let vote_average: Double
     let genre_ids: [Int]
     let release_date: String
+    let original_language: String
 }
 
 /*

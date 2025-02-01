@@ -148,15 +148,6 @@ extension MainViewController: UICollectionViewDataSource, UICollectionViewDelega
             print(#function/*, collectionView*/)
         case mainView.todayMovieCollectionView:
             let vc = MovieDetailViewController()
-//            vc.navigationItem.title = todayMovieList[indexPath.item].title
-            
-            /*
-             1. imageAPI로 백드롭 로드
-             2. 오버뷰 전달
-             3.
-             
-             */
-        
             vc.selectedMovie = todayMovieList[indexPath.item]
             self.navigationController?.pushViewController(vc, animated: true)
         default:

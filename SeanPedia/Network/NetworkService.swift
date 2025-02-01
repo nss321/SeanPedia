@@ -11,6 +11,7 @@ import Alamofire
 enum TMDBRequest {
     case trending
     case images(id: Int)
+    case credit(id: Int)
     
     var baseURL: String {
         return Urls.baseURL()
@@ -22,6 +23,8 @@ enum TMDBRequest {
             return URL(string: Urls.trending())!
         case let .images(id):
             return URL(string: Urls.images(id: id))!
+        case let .credit(id: id):
+            return URL(string: Urls.credit(id: id))!
         }
     }
     

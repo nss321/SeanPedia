@@ -15,8 +15,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         BaseView.appearance().backgroundColor = .seanPediaBlack
-        UINavigationBar.appearance().titleTextAttributes = [.foregroundColor : UIColor.seanPediaWhite]
+        
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithDefaultBackground()
+        appearance.backgroundColor = .seanPediaBlack
+        appearance.titleTextAttributes = [.foregroundColor : UIColor.seanPediaWhite]
+
         UINavigationBar.appearance().tintColor = .seanPediaAccent
+        UINavigationBar.appearance().scrollEdgeAppearance = appearance
+        UINavigationBar.appearance().standardAppearance = appearance
+        
         UITabBar.appearance().tintColor = .seanPediaAccent
         
 //        Thread.sleep(forTimeInterval: 2.0)

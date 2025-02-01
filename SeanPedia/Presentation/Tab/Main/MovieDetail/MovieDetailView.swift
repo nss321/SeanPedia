@@ -33,7 +33,15 @@ final class MovieDetailView: BaseView {
     private let posterLabel = UILabel()
     let posterCollectionView = BaseCollectionView()
     
-    private var isFolded = true
+    private var isFolded = false {
+        didSet {
+            var title = AttributedString(self.isFolded ? "Hide" : "More")
+            title.font = UIFont.systemFont(ofSize: 16)
+            config.attributedTitle = title
+            self.foldButton.configuration = config
+            self.overview.numberOfLines = self.isFolded ? 0 : 3
+        }
+    }
     
     let dummyView = UIView()
     
@@ -95,7 +103,7 @@ final class MovieDetailView: BaseView {
         castCollectionView.snp.makeConstraints {
             $0.top.equalTo(castLabel.snp.bottom).offset(mediumMargin)
             $0.horizontalEdges.equalToSuperview()
-            $0.height.equalTo(screenHeight / 6)
+            $0.height.equalTo(80+smallMargin)
         }
         posterLabel.snp.makeConstraints {
             $0.top.equalTo(castCollectionView.snp.bottom).offset(largeMargin)
@@ -104,7 +112,7 @@ final class MovieDetailView: BaseView {
         posterCollectionView.snp.makeConstraints {
             $0.top.equalTo(posterLabel.snp.bottom).offset(mediumMargin)
             $0.horizontalEdges.equalToSuperview()
-            $0.height.equalTo(screenHeight * 0.18)
+            $0.height.equalTo(screenHeight * 0.2)
             $0.bottom.greaterThanOrEqualToSuperview().inset(largeMargin)
         }
     }
@@ -134,7 +142,6 @@ final class MovieDetailView: BaseView {
             
             $0.configuration = config
             $0.addAction(UIAction(handler: { _ in
-                self.overview.numberOfLines = self.isFolded ? 0 : 3
                 self.isFolded.toggle()
             }), for: .touchUpInside)
         }
@@ -151,11 +158,11 @@ final class MovieDetailView: BaseView {
             $0.textColor = .seanPediaWhite
         }
         castCollectionView.do {
-            $0.layer.borderColor = UIColor.red.cgColor
-            $0.layer.borderWidth = 1
             let layout = UICollectionViewFlowLayout()
             layout.scrollDirection = .horizontal
             $0.collectionViewLayout = layout
+            $0.contentInset = UIEdgeInsets(top: 0, left: CGFloat(mediumMargin), bottom: 0, right: CGFloat(mediumMargin))
+            $0.register(CastCollectionViewCell.self, forCellWithReuseIdentifier: CastCollectionViewCell.id)
         }
         posterLabel.do {
             $0.text = "Poster"
@@ -163,11 +170,12 @@ final class MovieDetailView: BaseView {
             $0.textColor = .seanPediaWhite
         }
         posterCollectionView.do {
-            $0.layer.borderColor = UIColor.blue.cgColor
-            $0.layer.borderWidth = 1
             let layout = UICollectionViewFlowLayout()
             layout.scrollDirection = .horizontal
             $0.collectionViewLayout = layout
+            $0.contentInset = UIEdgeInsets(top: 0, left: CGFloat(mediumMargin), bottom: 0, right: CGFloat(mediumMargin))
+            $0.register(PosterCollectionViewCell.self, forCellWithReuseIdentifier: PosterCollectionViewCell.id)
+
         }
     }
     
