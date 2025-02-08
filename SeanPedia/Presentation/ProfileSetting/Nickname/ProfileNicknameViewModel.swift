@@ -8,12 +8,21 @@
 import Foundation
 
 final class ProfileNicknameViewModel {
+    let energyOrientation = ["E","I"]
+    let informationProcessing = ["S","N"]
+    let decisionMaking = ["F","T"]
+    let lifestyleApproach = ["P","J"]
+    var mbtiCounter = Array(repeating: false, count: 4)
+    var currentMBTI = Array(repeating: "", count: 4)
+    
     let inputTextField: Observable<String?> = Observable(nil)
     let outputValidationText = Observable("")
     let outputIsValid = Observable(false)
 
     let inputCompleteButtonTapped: Observable<Profile?> = Observable(nil)
     let outputCompleteButtonTapped: Observable<Void?> = Observable(nil)
+    
+    let inputCheckValidation: Observable<Void?> = Observable(())
     
     init() {
         print(#function, "profilenicknameviewmodel init")
@@ -23,12 +32,17 @@ final class ProfileNicknameViewModel {
         inputCompleteButtonTapped.lazyBind { [weak self] profile in
             self?.completeButtonTapped(profile: profile)
         }
+        inputCheckValidation.lazyBind { [weak self] _ in
+            print(#function, "셀 클릭")
+            self?.checkValidaiton()
+        }
     }
      
     private func completeButtonTapped(profile: Profile?) {
         if let profile {
             UserDefaultsManager.shared.setData(kind: .profile, type: Profile.self, data: profile)
             UserDefaultsManager.shared.isOnboarded = true
+            UserDefaultsManager.shared.mbti = currentMBTI.joined()
             outputCompleteButtonTapped.value = ()
         } else {
             print(#function, "unexpected nil")
@@ -41,6 +55,11 @@ final class ProfileNicknameViewModel {
         guard let nickname = inputTextField.value else {
             outputValidationText.value = ""
             outputIsValid.value = false
+            return
+        }
+        
+        if nickname.isEmpty {
+            outputValidationText.value = ""
             return
         }
         

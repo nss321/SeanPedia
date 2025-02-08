@@ -15,7 +15,7 @@ final class UserDefaultsManager {
     private let userDefaults = UserDefaults.standard
     
     enum Key: String {
-        case likedMovie, profile, recentlyKeyword, isOnboarded
+        case likedMovie, profile, recentlyKeyword, isOnboarded, mbti
 
     }
     
@@ -55,6 +55,15 @@ final class UserDefaultsManager {
             } else {
                 return RecentSearch(keywords: [])
             }
+        }
+    }
+    
+    var mbti: String {
+        get {
+            return userDefaults.string(forKey: Key.mbti.rawValue) ?? ""
+        }
+        set {
+            userDefaults.set(newValue, forKey: Key.mbti.rawValue)
         }
     }
     

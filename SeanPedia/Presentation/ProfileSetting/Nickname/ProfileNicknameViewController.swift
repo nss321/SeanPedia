@@ -23,10 +23,12 @@ final class ProfileNicknameViewController: BaseViewController {
     
     func bind() {
         viewModel.outputValidationText.bind { [weak self] string in
+            self?.nicknameView.notiLabel.isHidden = string.isEmpty
             self?.nicknameView.notiLabel.text = string
         }
         viewModel.outputIsValid.bind { [weak self] bool in
-            self?.nicknameView.completeButton.isEnabled = bool
+            guard let mbtiCounter = self?.viewModel.mbtiCounter else { return }
+            self?.nicknameView.completeButton.isEnabled = bool && mbtiCounter.allSatisfy({ $0 })
             self?.nicknameView.notiLabel.textColor = bool ? .seanPediaWhite : .seanPediaAccent
         }
         viewModel.outputCompleteButtonTapped.lazyBind { [weak self] _ in
@@ -57,7 +59,14 @@ final class ProfileNicknameViewController: BaseViewController {
             }))
         navigationItem.title = "프로필 설정"
         navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+    }
+    
+    override func configDelegate() {
         navigationController?.interactivePopGestureRecognizer?.delegate = self
+        nicknameView.mbtiCollectionViewStack.arrangedSubviews.forEach {
+            ($0 as? UICollectionView)?.delegate = self
+            ($0 as? UICollectionView)?.dataSource = self
+        }
     }
     
     @objc private func navigateProfileSettingView(_ sender: UITapGestureRecognizer) {
@@ -71,6 +80,65 @@ final class ProfileNicknameViewController: BaseViewController {
     
     @objc private func nicknameTextFieldDidChanged() {
         viewModel.inputTextField.value = nicknameView.nicknameTextField.text
+    }
+}
+
+extension ProfileNicknameViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 2
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let index = indexPath.item
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MBTICollectionViewCell.id, for: indexPath) as! MBTICollectionViewCell
+        
+        switch collectionView.tag {
+        case 0:
+            cell.config(char: viewModel.energyOrientation[index])
+            print(#function, viewModel.energyOrientation[index])
+        case 1:
+            cell.config(char: viewModel.informationProcessing[index])
+        case 2:
+            cell.config(char: viewModel.decisionMaking[index])
+        case 3:
+            cell.config(char: viewModel.lifestyleApproach[index])
+        default:
+            print("")
+        }
+        
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print(#function, indexPath)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+        guard let cell = collectionView.cellForItem(at: indexPath) as? MBTICollectionViewCell else {
+            return true
+        }
+        if cell.isSelected {
+            collectionView.deselectItem(at: indexPath, animated: false)
+            viewModel.mbtiCounter[collectionView.tag] = false
+            viewModel.inputCheckValidation.value = ()
+            return false
+        } else {
+            viewModel.mbtiCounter[collectionView.tag] = true
+            switch collectionView.tag {
+            case 0:
+                viewModel.currentMBTI[collectionView.tag] = viewModel.energyOrientation[indexPath.item]
+            case 1:
+                viewModel.currentMBTI[collectionView.tag] = viewModel.informationProcessing[indexPath.item]
+            case 2:
+                viewModel.currentMBTI[collectionView.tag] = viewModel.decisionMaking[indexPath.item]
+            case 3:
+                viewModel.currentMBTI[collectionView.tag] = viewModel.lifestyleApproach[indexPath.item]
+            default:
+                print("")
+            }
+            viewModel.inputCheckValidation.value = ()
+            return true
+        }
     }
 }
 
