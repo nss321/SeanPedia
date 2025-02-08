@@ -18,9 +18,27 @@ final class TodayMovieCollectionViewCell: BaseCollectionViewCell {
     private let posterImage = UIImageView()
     private let movieNameLabel = UILabel()
     private let movieSummaryLabel = UILabel()
+    private let likeButton = UIButton()
+    private var likeButtonConfig = UIButton.Configuration.plain()
+    private var isLiked: Bool = false {
+        didSet {
+            self.likeButton.configuration?.image = UIImage(systemName: isLiked ? "heart.fill" : "heart")?.withTintColor(.seanPediaAccent, renderingMode: .alwaysOriginal)
+            self.saveLikeState()
+        }
+    }
+    private var alreadyLiked = false
+    private var id = 0
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        isLiked = false
+        alreadyLiked = false
+        likeButton.configuration?.image = UIImage(systemName: "heart")?.withTintColor(.seanPediaAccent, renderingMode: .alwaysOriginal)
+    }
     
     override func configHierarchy() {
-        [posterImage, movieNameLabel, movieSummaryLabel].forEach { contentView.addSubview($0) }
+        [posterImage, movieNameLabel, movieSummaryLabel, likeButton].forEach { contentView.addSubview($0) }
     }
     
     override func configLayout() {
@@ -37,6 +55,11 @@ final class TodayMovieCollectionViewCell: BaseCollectionViewCell {
             $0.top.equalTo(movieNameLabel.snp.bottom).offset(smallMargin)
             $0.leading.trailing.equalToSuperview()
             $0.bottom.lessThanOrEqualToSuperview()
+        }
+        likeButton.snp.makeConstraints {
+            $0.top.equalTo(movieNameLabel.snp.top)
+            $0.leading.greaterThanOrEqualTo(movieNameLabel.snp.trailing)
+            $0.trailing.equalToSuperview()
         }
     }
     
@@ -56,6 +79,15 @@ final class TodayMovieCollectionViewCell: BaseCollectionViewCell {
             $0.numberOfLines = 2
             $0.lineBreakMode = .byTruncatingTail
         }
+        likeButton.do {
+            likeButtonConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
+            likeButtonConfig.image = UIImage(systemName: "heart")?.withTintColor(.seanPediaAccent, renderingMode: .alwaysOriginal)
+            $0.configuration = likeButtonConfig
+            
+            $0.addAction(UIAction(handler: { _ in
+                self.isLiked.toggle()
+            }), for: .touchUpInside)
+        }
     }
     
     func config(item: MovieInfo) {
@@ -67,5 +99,24 @@ final class TodayMovieCollectionViewCell: BaseCollectionViewCell {
         }
         movieNameLabel.text = item.title
         movieSummaryLabel.text = item.overview.isEmpty ? "요약 정보가 없습니다." : item.overview
+        
+        self.id = item.id
+        if UserDefaultsManager.shared.likedList.likedMovie.contains(item.id) {
+            self.isLiked = true
+            self.alreadyLiked = true
+        }
+    }
+    
+    private func saveLikeState() {
+        var newList = UserDefaultsManager.shared.likedList
+        if self.isLiked && !alreadyLiked {
+            newList.likedMovie.append(self.id)
+            UserDefaultsManager.shared.setData(kind: .likedMovie, type: LikedList.self, data: newList)
+        } else if !self.isLiked && alreadyLiked {
+            if let index = newList.likedMovie.firstIndex(of: self.id) {
+                newList.likedMovie.remove(at: index)
+                UserDefaultsManager.shared.setData(kind: .likedMovie, type: LikedList.self, data: newList)
+            }
+        }
     }
 }

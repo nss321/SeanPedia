@@ -15,8 +15,18 @@ final class UserDefaultsManager {
     private let userDefaults = UserDefaults.standard
     
     enum Key: String {
-        case isOnboarded, nickname, birthday, level
+        case likedMovie, profile, recentlyKeyword, isOnboarded
+
     }
+    
+    /*
+     profileImage -> String; e.g. profile_0
+     nickname -> String; e.g. 션션
+     signupDate -> String; e.g. 25.01.23 가입
+     likedMovie -> Array; ["id"]
+     무비박스 보관중~ ud.shared.likedCount()
+     
+     */
     
     var isOnboarded: Bool {
         get {
@@ -28,7 +38,27 @@ final class UserDefaultsManager {
         }
     }
     
-    func getProfile<T: Decodable>(kind: Key, type: T.Type) -> T? {
+    var likedList: LikedList {
+        get {
+            if let list = UserDefaultsManager.shared.getStoredData(kind: .likedMovie, type: LikedList.self) {
+                return list
+            } else {
+                return LikedList(likedMovie: [])
+            }
+        }
+    }
+    
+    var recentSearchedKeywordList: RecentSearch {
+        get {
+            if let list = UserDefaultsManager.shared.getStoredData(kind: .recentlyKeyword, type: RecentSearch.self) {
+                return list
+            } else {
+                return RecentSearch(keywords: [])
+            }
+        }
+    }
+    
+    func getStoredData<T: Decodable>(kind: Key, type: T.Type) -> T? {
         if let storedData = userDefaults.object(forKey: kind.rawValue) as? Data {
             let decoder = JSONDecoder()
             if let storedObject = try? decoder.decode(T.self, from: storedData) {
@@ -43,7 +73,7 @@ final class UserDefaultsManager {
         }
     }
     
-    func setProfile<T: Codable>(kind: Key, type: T.Type, data: T) {
+    func setData<T: Codable>(kind: Key, type: T.Type, data: T) {
         let encoder = JSONEncoder()
         if let encoded = try? encoder.encode(data) {
             userDefaults.set(encoded, forKey: kind.rawValue)
@@ -52,10 +82,11 @@ final class UserDefaultsManager {
         }
     }
     
-    func resetProfile() {
+    func resetData() {
         print(#function)
-        userDefaults.removeObject(forKey: Key.nickname.rawValue)
-        userDefaults.removeObject(forKey: Key.birthday.rawValue)
-        userDefaults.removeObject(forKey: Key.level.rawValue)
+        isOnboarded = false
+        userDefaults.removeObject(forKey: Key.profile.rawValue)
+        userDefaults.removeObject(forKey: Key.likedMovie.rawValue)
+        userDefaults.removeObject(forKey: Key.recentlyKeyword.rawValue)
     }
 }

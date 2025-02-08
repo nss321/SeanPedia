@@ -29,7 +29,7 @@ final class ProfileCircle: BaseView {
         get {
             guard let _selectedImage else {
                 print(#function, "no image")
-                return "profile_0"
+                return "profile_\(Int.random(in: 0...11))"
             }
             return _selectedImage
         }

@@ -97,4 +97,28 @@ final class ProfileCard: BaseView {
     func setGestureToProfileContainer(gesture: UIGestureRecognizer) {
         addGestureRecognizer(gesture)
     }
+    
+    func updateMovieBoxNumber() {
+        let numberOfLike = UserDefaultsManager.shared.likedList.likedMovie.count
+        var attrTitle = AttributedString("\(numberOfLike)개의 무비박스 보관중")
+        attrTitle.foregroundColor = UIColor.seanPediaWhite
+        attrTitle.font = .systemFont(ofSize: 14, weight: .bold)
+        self.movieBoxButton.configuration?.attributedTitle = attrTitle
+    }
+    
+    func updateProfileCard() {
+        if let profile = UserDefaultsManager.shared.getStoredData(kind: .profile, type: Profile.self) {
+            nicknameLabel.text = profile.nickname
+            profileImageView.selectedImage = profile.profileImage
+            signupDateLabel.text = profile.signupDate
+        } else {
+            print("profile update failed")
+        }
+    }
+    
+    func setProfileCard(profile: Profile) {
+        nicknameLabel.text = profile.nickname
+        profileImageView.selectedImage = profile.profileImage
+        signupDateLabel.text = profile.signupDate
+    }
 }

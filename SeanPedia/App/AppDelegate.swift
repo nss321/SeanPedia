@@ -27,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         UITabBar.appearance().tintColor = .seanPediaAccent
         
-//        Thread.sleep(forTimeInterval: 2.0)
+        Thread.sleep(forTimeInterval: 0.5)
         return true
     }
 

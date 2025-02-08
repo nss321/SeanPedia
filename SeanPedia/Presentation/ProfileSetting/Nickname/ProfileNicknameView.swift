@@ -12,13 +12,13 @@ import Then
 
 final class ProfileNicknameView: BaseView {
     let profileImageView = ProfileCircle(isRepresented: true, diemeter: Int(UIScreen.main.bounds.width) / 4)
-    private let nicknameTextField = UITextField()
+    let nicknameTextField = UITextField()
     private let nicknameTextFieldUnderline = UIView()
     let notiLabel = UILabel()
     let completeButton = CustomCTAButton()
     
     override func configHierarchy() {
-        [/*test2,*/ profileImageView, nicknameTextField, nicknameTextFieldUnderline, notiLabel, completeButton].forEach { addSubview($0) }
+        [profileImageView, nicknameTextField, nicknameTextFieldUnderline, notiLabel, completeButton].forEach { addSubview($0) }
     }
     
     override func configLayout() {
@@ -58,19 +58,48 @@ final class ProfileNicknameView: BaseView {
             $0.leftViewMode = .always
             $0.leftView = UIView.init(frame: CGRect(x: 0, y: 0, width: mediumMargin, height: 0))
             $0.textColor = .seanPediaWhite
+            $0.addTarget(self, action: #selector(nicknameTextFieldDidChanged), for: .editingChanged)
         }
         
         nicknameTextFieldUnderline.backgroundColor = .seanPediaWhite
         
         notiLabel.do {
-            $0.text = "닉네임에 숫자는 포함할 수 없어요."
             $0.textColor = .seanPediaAccent
             $0.font = .systemFont(ofSize: 11)
+        }
+        
+        completeButton.do {
+            $0.isEnabled = false
         }
     }
     
     func configuredProfile() {
         print(#function, nicknameTextField.text!, profileImageView.selectedImage)
+    }
+    
+    @objc private func nicknameTextFieldDidChanged() {
+        completeButton.isEnabled = false
+        let nickname = nicknameTextField.text!
+        
+        if nickname.count < 2 || nickname.count > 10 {
+            notiLabel.text = "2글자 이상 10글자 미만으로 설정해주세요"
+            notiLabel.textColor = .seanPediaAccent
+            return
+        }
+        if nickname.contains(/[@#$%]/) {
+            notiLabel.text = "닉네임에 @,#,$,%는 포함할 수 없어요."
+            notiLabel.textColor = .seanPediaAccent
+            return
+        }
+        if nickname.contains(/\d/) {
+            notiLabel.text = "닉네임에 숫자는 포함할 수 없어요"
+            notiLabel.textColor = .seanPediaAccent
+            return
+        } else {
+            notiLabel.text = "사용할 수 있는 닉네임이에요."
+            notiLabel.textColor = .seanPediaWhite
+            completeButton.isEnabled = true
+        }
     }
 }
 

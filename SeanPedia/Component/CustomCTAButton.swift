@@ -35,7 +35,6 @@ final class CustomCTAButton: UIButton {
     }
     
     func configButtonInfo(title: String, action: UIAction) {
-        //        config.attributedTitle
         config.title = title
         addAction(action, for: .touchUpInside)
         configuration = config

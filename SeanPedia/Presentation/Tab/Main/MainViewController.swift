@@ -16,9 +16,8 @@ final class MainViewController: BaseViewController {
         }
     }
     
-    var recentSearchDummy: [String] = [] {
+    var recentSearchKeywords: [String] = [] {
         didSet {
-            print(#function, recentSearchDummy)
             mainView.recentSearchCollectionView.reloadData()
         }
     }
@@ -29,12 +28,15 @@ final class MainViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        recentSearchKeywords = UserDefaultsManager.shared.recentSearchedKeywordList.keywords
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        print(#function, recentSearchKeywords)
         fetchTodayMovieList()
-        if recentSearchDummy.isEmpty {
+        self.mainView.profileCard.updateProfileCard()
+        if recentSearchKeywords.isEmpty {
             mainView.recentSearchCollectionView.isHidden = true
             mainView.noResult.isHidden = false
         } else {
@@ -43,10 +45,17 @@ final class MainViewController: BaseViewController {
         }
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        print(#function, recentSearchKeywords)
+        let newValue = RecentSearch(keywords: recentSearchKeywords)
+        UserDefaultsManager.shared.setData(kind: .recentlyKeyword, type: RecentSearch.self, data: newValue)
+    }
+    
     override func configView() {
         mainView.profileCard.setGestureToProfileContainer(gesture: UITapGestureRecognizer(target: self, action: #selector(presentProfileSettingViewController)))
         mainView.deleteSearchingHistoryButton.addAction(UIAction(handler: { _ in
-            self.recentSearchDummy.removeAll()
+            self.recentSearchKeywords.removeAll()
         }), for: .touchUpInside)
     }
     
@@ -61,23 +70,24 @@ final class MainViewController: BaseViewController {
         navigationItem.title = "오늘의 영화"
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(
-            title: nil,
             image: UIImage(systemName: "magnifyingglass"),
             primaryAction: UIAction(handler: { _ in
                 let vc = SearchViewController()
                 vc.completion = {
-                    self.recentSearchDummy.append($0)
+                    self.recentSearchKeywords.append($0)
                 }
                 self.navigationController?.pushViewController(vc, animated: true)
-            }),
-            menu: nil)
+            }))
     }
     
     @objc private func presentProfileSettingViewController() {
-        print(#function)
-        let vc = UINavigationController(rootViewController: MyProfileEditViewController())
-        vc.modalPresentationStyle = .fullScreen
-        present(vc, animated: true)
+        let vc = MyProfileEditViewController()
+        vc.completion = { [self] profile in
+            mainView.profileCard.setProfileCard(profile: profile)
+        }
+        let presentVC = UINavigationController(rootViewController: vc)
+        presentVC.modalPresentationStyle = .fullScreen
+        present(presentVC, animated: true)
     }
     
     func fetchTodayMovieList() {
@@ -90,10 +100,9 @@ final class MainViewController: BaseViewController {
 
 extension MainViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        print(#function, collectionView)
         switch collectionView {
         case mainView.recentSearchCollectionView:
-            return recentSearchDummy.count
+            return recentSearchKeywords.count
         case mainView.todayMovieCollectionView:
             return todayMovieList.count
         default:
@@ -105,9 +114,8 @@ extension MainViewController: UICollectionViewDataSource, UICollectionViewDelega
         switch collectionView {
         case mainView.recentSearchCollectionView:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecentSearchCollectionViewCell.id, for: indexPath) as! RecentSearchCollectionViewCell
-            cell.config(title: recentSearchDummy[indexPath.item], action: UIAction(handler: { _ in
-                print(#function, indexPath.item)
-                self.recentSearchDummy.remove(at: indexPath.item)
+            cell.config(title: recentSearchKeywords[indexPath.item], action: UIAction(handler: { _ in
+                self.recentSearchKeywords.remove(at: indexPath.item)
                 self.mainView.recentSearchCollectionView.reloadData()
             }))
             return cell
@@ -124,7 +132,7 @@ extension MainViewController: UICollectionViewDataSource, UICollectionViewDelega
         switch collectionView {
         case mainView.recentSearchCollectionView:
             let label = UILabel(frame: .zero)
-            label.text = recentSearchDummy[indexPath.item]
+            label.text = recentSearchKeywords[indexPath.item]
             label.font = .systemFont(ofSize: 14)
             label.sizeToFit()
             let cellWidth = label.frame.width + CGFloat(smallMargin) * 4
@@ -151,7 +159,7 @@ extension MainViewController: UICollectionViewDataSource, UICollectionViewDelega
         switch collectionView {
         case mainView.recentSearchCollectionView:
             let vc = SearchViewController()
-            vc.keyword = recentSearchDummy[indexPath.item]
+            vc.keyword = recentSearchKeywords[indexPath.item]
             self.navigationController?.pushViewController(vc, animated: true)
             
         case mainView.todayMovieCollectionView:

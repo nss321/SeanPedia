@@ -18,18 +18,10 @@ final class OnboardingViewController: BaseViewController {
         view = onboardingView
     }
     
-    override func configHierarchy() {
-        
-    }
-    
-    override func configLayout() {
-        
-    }
-    
     override func configView() {
-        onboardingView.startButton.configButtonInfo(title: "시작하기", action: UIAction(handler: { UIAction in
-            let vc = ProfileViewController()
-            self.navigationController?.pushViewController(vc, animated: true)
+        onboardingView.startButton.configButtonInfo(title: "시작하기", action: UIAction(handler: { [weak self] _ in
+            let vc = ProfileNicknameViewController()
+            self?.navigationController?.pushViewController(vc, animated: true)
         }))
     }
 }

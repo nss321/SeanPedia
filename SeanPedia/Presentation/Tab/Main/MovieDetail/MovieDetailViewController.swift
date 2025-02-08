@@ -14,13 +14,31 @@ final class MovieDetailViewController: BaseViewController {
     var selectedMovie: MovieInfo?
     private var castingList: [CastInfo] = []
     private var posterList: [PosterImage] = []
-    
+    private var isLiked = false  {
+        didSet {
+            navigationItem.rightBarButtonItem?.image = UIImage(systemName: isLiked ? "heart.fill" : "heart")
+        }
+    }
+    private var likedList: LikedList {
+        get {
+            if let list = UserDefaultsManager.shared.getStoredData(kind: .likedMovie, type: LikedList.self) {
+                return list
+            } else {
+                return LikedList(likedMovie: [])
+            }
+        }
+    }
     override func loadView() {
         view = movieDetailView
     }
     
     override func configView() {
-        print(#function)
+        if let storedData = UserDefaultsManager.shared.getStoredData(kind: .likedMovie, type: LikedList.self
+        ) {
+            print(#function, storedData.likedMovie)
+        } else {
+            print(#function, "없는데?????")
+        }
         
         guard let selectedMovie else {
             print(#function, "selected movie nil")
@@ -50,7 +68,7 @@ final class MovieDetailViewController: BaseViewController {
             self.movieDetailView.castCollectionView.reloadData()
             self.movieDetailView.posterCollectionView.reloadData()
         }
-        
+                
     }
     
     override func configDelegate() {
@@ -63,22 +81,40 @@ final class MovieDetailViewController: BaseViewController {
     }
     
     override func configNavigation() {
-        navigationItem.title = selectedMovie?.title ?? ""
+        guard let selectedMovie = self.selectedMovie else {
+            print(#function, "selected movie nil")
+            return
+        }
+        
+        let alreadyLiked = likedList.likedMovie.contains(selectedMovie.id)
+        let image = UIImage(systemName: alreadyLiked ? "heart.fill" : "heart")
+        self.isLiked = alreadyLiked ? true : false
+        
+        navigationItem.title = selectedMovie.title
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             title: nil,
             image: UIImage(systemName: "chevron.left"),
             primaryAction: UIAction(handler: { _ in
+                var newList = self.likedList
+                if self.isLiked && !alreadyLiked {
+                    newList.likedMovie.append(selectedMovie.id)
+                    UserDefaultsManager.shared.setData(kind: .likedMovie, type: LikedList.self, data: newList)
+                } else if !self.isLiked && alreadyLiked {
+                    if let index = newList.likedMovie.firstIndex(of: selectedMovie.id) {
+                        newList.likedMovie.remove(at: index)
+                        UserDefaultsManager.shared.setData(kind: .likedMovie, type: LikedList.self, data: newList)
+                    }
+                }
                 self.navigationController?.popViewController(animated: true)
             }),
             menu: nil)
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             title: nil,
-            image: UIImage(systemName: "heart"),
+            image: image,
             primaryAction: UIAction(handler: { _ in
-                self.dismiss(animated: true) {
-                    print("좋아요 💝")
-                }
+                self.isLiked.toggle()
+                print("좋아요 💝")
             }),
             menu: nil)
     }

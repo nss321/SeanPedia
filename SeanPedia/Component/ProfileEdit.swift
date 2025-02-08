@@ -42,9 +42,6 @@ class ProfileEdit: BaseView {
     }
     
     override func configView() {
-        
-        profileImageView.selectedImage = ProfileImage.randomProfile()
-        
         nicknameTextField.do {
             $0.attributedPlaceholder = NSAttributedString(string: "닉네임을 입력하세요.", attributes: [.foregroundColor : UIColor.seanPediaGray])
             $0.font = .systemFont(ofSize: 12)
@@ -58,12 +55,18 @@ class ProfileEdit: BaseView {
         nicknameTextFieldUnderline.backgroundColor = .seanPediaWhite
         
         notiLabel.do {
-            $0.text = "닉네임에 숫자는 포함할 수 없어요."
             $0.textColor = .seanPediaAccent
             $0.font = .systemFont(ofSize: 11)
         }
+        
+        guard let profile = UserDefaultsManager.shared.getStoredData(kind: .profile, type: Profile.self) else {
+            profileImageView.selectedImage = ProfileImage.randomProfile()
+            nicknameTextField.text = ""
+            return
+        }
+        
+        profileImageView.selectedImage = profile.profileImage
+        nicknameTextField.text = profile.nickname
     }
-    
-    
 }
 

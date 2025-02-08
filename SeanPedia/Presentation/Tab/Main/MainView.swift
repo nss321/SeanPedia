@@ -71,6 +71,9 @@ final class MainView: BaseView {
     }
     
     override func configView() {
+        profileCard.do {
+            $0.updateMovieBoxNumber()
+        }
         recentSearchLabel.do {
             $0.text = "최근 검색어"
             $0.textColor = .seanPediaWhite

@@ -19,12 +19,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let scene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: scene)
         
-//        let isAleadyOnboarded = UserDefaultsManager.shared.isOnboarded
-//        window.rootViewController = UINavigationController(
-//            rootViewController: isAleadyOnboarded ? MainViewController() : OnboardingViewController()
-//        )
-//        window.rootViewController = UINavigationController(rootViewController: OnboardingViewController())
-        window.rootViewController = TabBarController()
+        let isAleadyOnboarded = UserDefaultsManager.shared.isOnboarded
+        window.rootViewController = isAleadyOnboarded ? TabBarController() : UINavigationController(rootViewController: OnboardingViewController())
         
         window.makeKeyAndVisible()
         self.window = window

@@ -13,12 +13,11 @@ import Then
 final class MyProfileView: BaseView {
     
     let profileCard = ProfileCard()
-    let tableView = UITableView()
-    let settingList = ["자주 묻는 질문", "1:1 문의", "알림 설정", "탈퇴하기"]
+    let settingCollectionView = BaseCollectionView()
     
     override func configHierarchy() {
         addSubview(profileCard)
-        addSubview(tableView)
+        addSubview(settingCollectionView)
     }
     
     override func configLayout() {
@@ -27,22 +26,55 @@ final class MyProfileView: BaseView {
             $0.horizontalEdges.equalToSuperview()
             $0.height.equalTo(screenHeight * 0.15)
         }
-        tableView.snp.makeConstraints {
-            $0.top.equalTo(profileCard.snp.bottom)
+        settingCollectionView.snp.makeConstraints {
+            $0.top.equalTo(profileCard.snp.bottom).offset(largeMargin)
             $0.horizontalEdges.equalToSuperview()
             $0.bottom.equalTo(safeAreaLayoutGuide)
         }
-        
     }
     
     override func configView() {
-        tableView.layer.borderColor = UIColor.red.cgColor
-        tableView.layer.borderWidth = 1
-        
-        tableView.do {
-            $0.backgroundColor = .clear
+        settingCollectionView.do {
+            $0.contentInset = UIEdgeInsets(top: 0, left: CGFloat(mediumMargin), bottom: 0, right: CGFloat(mediumMargin))
+            $0.register(SettingCollectionViewCell.self, forCellWithReuseIdentifier: SettingCollectionViewCell.id)
         }
     }
+}
+
+
+final class SettingCollectionViewCell: BaseCollectionViewCell {
+    static let id = "SettingCollectionViewCell"
+
+    let menuLabel = UILabel()
+    let seperator = UIView()
     
+    override func configHierarchy() {
+        contentView.addSubview(menuLabel)
+        contentView.addSubview(seperator)
+    }
+    override func configLayout() {
+        menuLabel.snp.makeConstraints {
+            $0.centerY.equalToSuperview()
+            $0.leading.equalToSuperview().inset(mediumMargin)
+        }
+        seperator.snp.makeConstraints {
+            $0.horizontalEdges.equalToSuperview().inset(mediumMargin)
+            $0.bottom.equalToSuperview()
+            $0.height.equalTo(1)
+        }
+    }
+    override func configView() {
+        isUserInteractionEnabled = false
+        menuLabel.do {
+            $0.font = .systemFont(ofSize: 16)
+            $0.textColor = .seanPediaWhite
+        }
+        seperator.do {
+            $0.backgroundColor = .seanPediaGray.withAlphaComponent(0.5)
+        }
+    }
+    func config(item: String) {
+        menuLabel.text = item
+    }
     
 }

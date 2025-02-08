@@ -23,6 +23,22 @@ final class SearchedMovieCollectionViewCell: BaseCollectionViewCell {
     private var likeButtonConfig = UIButton.Configuration.plain()
     private var genreButtonConfig = UIButton.Configuration.plain()
     private let seperator = UIView()
+    private var isLiked: Bool = false {
+        didSet {
+            self.likeButton.configuration?.image = UIImage(systemName: isLiked ? "heart.fill" : "heart")?.withTintColor(.seanPediaAccent, renderingMode: .alwaysOriginal)
+            self.saveLikeState()
+        }
+    }
+    private var alreadyLiked = false
+    private var id = 0
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        isLiked = false
+        alreadyLiked = false
+        likeButton.configuration?.image = UIImage(systemName: "heart")?.withTintColor(.seanPediaAccent, renderingMode: .alwaysOriginal)
+    }
     
     override func configHierarchy() {
         [
@@ -34,7 +50,6 @@ final class SearchedMovieCollectionViewCell: BaseCollectionViewCell {
             likeButton,
             seperator
         ].forEach { contentView.addSubview($0) }
-        
     }
     
     override func configLayout() {
@@ -98,6 +113,10 @@ final class SearchedMovieCollectionViewCell: BaseCollectionViewCell {
             likeButtonConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
             likeButtonConfig.image = UIImage(systemName: "heart")?.withTintColor(.seanPediaAccent, renderingMode: .alwaysOriginal)
             $0.configuration = likeButtonConfig
+            
+            $0.addAction(UIAction(handler: { _ in
+                self.isLiked.toggle()
+            }), for: .touchUpInside)
         }
         seperator.do {
             $0.backgroundColor = .seanPediaGray
@@ -126,20 +145,36 @@ final class SearchedMovieCollectionViewCell: BaseCollectionViewCell {
         moviewNameLabel.text = item.title
         releaseDateLabel.text = item.release_date
         
-//        var genre: [String] = []
         for i in 0..<item.genre_ids.count {
             if i > 1 {
                 break
             } else {
-//                genre.append("\(Genre.genreId(item.genre_ids[i]))")
                 [firstGenre, secondGenre][i].configuration = configGenreButton(
                     title: Genre.genreId(item.genre_ids[i])
                 )
             }
         }
+        self.id = item.id
+        if UserDefaultsManager.shared.likedList.likedMovie.contains(item.id) {
+            self.isLiked = true
+            self.alreadyLiked = true
+        }
     }
     
     func lastCell() {
         seperator.isHidden = true
+    }
+    
+    private func saveLikeState() {
+        var newList = UserDefaultsManager.shared.likedList
+        if self.isLiked && !alreadyLiked {
+            newList.likedMovie.append(self.id)
+            UserDefaultsManager.shared.setData(kind: .likedMovie, type: LikedList.self, data: newList)
+        } else if !self.isLiked && alreadyLiked {
+            if let index = newList.likedMovie.firstIndex(of: self.id) {
+                newList.likedMovie.remove(at: index)
+                UserDefaultsManager.shared.setData(kind: .likedMovie, type: LikedList.self, data: newList)
+            }
+        }
     }
 }
