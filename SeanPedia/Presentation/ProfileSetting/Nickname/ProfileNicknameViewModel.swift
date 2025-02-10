@@ -15,14 +15,14 @@ final class ProfileNicknameViewModel {
     var mbtiCounter = Array(repeating: false, count: 4)
     var currentMBTI = Array(repeating: "", count: 4)
     
-    let inputTextField: Observable<String?> = Observable(nil)
+    let inputTextField: Observable<String?> = .init(nil)
     let outputValidationText = Observable("")
     let outputIsValid = Observable(false)
 
-    let inputCompleteButtonTapped: Observable<Profile?> = Observable(nil)
-    let outputCompleteButtonTapped: Observable<Void?> = Observable(nil)
+    let inputCompleteButtonTapped: Observable<Profile?> = .init(nil)
+    let outputCompleteButtonTapped: Observable<Void?> = .init(nil)
     
-    let inputCheckValidation: Observable<Void?> = Observable(())
+    let inputCheckValidation: Observable<Void?> = .init(())
     
     init() {
         print(#function, "profilenicknameviewmodel init")

@@ -24,7 +24,11 @@ enum ProfileImage: String, CaseIterable {
     }
     
     static func randomProfile() -> String {
-        return self.allCases.randomElement()?.profileImage ?? "no image"
+        return self.allCases.randomElement()?.rawValue ?? "no image"
+    }
+    
+    static func profileList() -> [String] {
+        return self.allCases.map { $0.rawValue }
     }
 }
 

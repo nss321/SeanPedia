@@ -71,8 +71,9 @@ final class ProfileNicknameViewController: BaseViewController {
     
     @objc private func navigateProfileSettingView(_ sender: UITapGestureRecognizer) {
         let vc = ProfileImageSettingViewController()
-        vc.selectedProfileImage = nicknameView.profileImageView.selectedImage
-        vc.dismissCompletion = {
+        let viewModel = vc.viewModel
+        viewModel.selectedProfileImage = nicknameView.profileImageView.selectedImage
+        viewModel.dismissCompletion = {
             self.nicknameView.profileImageView.selectedImage = $0
         }
         navigationController?.pushViewController(vc, animated: true)

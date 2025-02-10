@@ -38,10 +38,6 @@ final class ProfileImageCollectionViewCell: BaseCollectionViewCell {
         }
     }
     
-    override func configView() {
-        
-    }
-    
     func configCell(image: String) {
         profile.configImage(image: image)
     }
