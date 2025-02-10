@@ -22,16 +22,16 @@ final class ProfileNicknameViewController: BaseViewController {
     }
     
     func bind() {
-        viewModel.outputValidationText.bind { [weak self] string in
+        viewModel.output.validationText.bind { [weak self] string in
             self?.nicknameView.notiLabel.isHidden = string.isEmpty
             self?.nicknameView.notiLabel.text = string
         }
-        viewModel.outputIsValid.bind { [weak self] bool in
+        viewModel.output.isValid.bind { [weak self] bool in
             guard let mbtiCounter = self?.viewModel.mbtiCounter else { return }
             self?.nicknameView.completeButton.isEnabled = bool && mbtiCounter.allSatisfy({ $0 })
             self?.nicknameView.notiLabel.textColor = bool ? .seanPediaWhite : .seanPediaAccent
         }
-        viewModel.outputCompleteButtonTapped.lazyBind { [weak self] _ in
+        viewModel.output.completeButtonTapped.lazyBind { [weak self] _ in
             let vc = TabBarController()
             self?.navigationController?.pushNewRootController(root: vc)
         }
@@ -43,7 +43,7 @@ final class ProfileNicknameViewController: BaseViewController {
                 profileImage: (self?.nicknameView.profileImageView.selectedImage)!,
                 nickname: (self?.nicknameView.nicknameTextField.text)!,
                 signupDate: DateManager.shared.convertDateToString(date: Date.now))
-            self?.viewModel.inputCompleteButtonTapped.value = profile
+            self?.viewModel.input.completeButtonTapped.value = profile
         }))
         
         nicknameView.profileImageView.changeAction(gesture: UITapGestureRecognizer(target: self, action: #selector(navigateProfileSettingView)))
@@ -80,7 +80,7 @@ final class ProfileNicknameViewController: BaseViewController {
     }
     
     @objc private func nicknameTextFieldDidChanged() {
-        viewModel.inputTextField.value = nicknameView.nicknameTextField.text
+        viewModel.input.textField.value = nicknameView.nicknameTextField.text
     }
 }
 
@@ -121,7 +121,7 @@ extension ProfileNicknameViewController: UICollectionViewDataSource, UICollectio
         if cell.isSelected {
             collectionView.deselectItem(at: indexPath, animated: false)
             viewModel.mbtiCounter[collectionView.tag] = false
-            viewModel.inputCheckValidation.value = ()
+            viewModel.input.checkValidation.value = ()
             return false
         } else {
             viewModel.mbtiCounter[collectionView.tag] = true
@@ -137,7 +137,7 @@ extension ProfileNicknameViewController: UICollectionViewDataSource, UICollectio
             default:
                 print("")
             }
-            viewModel.inputCheckValidation.value = ()
+            viewModel.input.checkValidation.value = ()
             return true
         }
     }

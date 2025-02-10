@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class ProfileNicknameViewModel {
+final class ProfileNicknameViewModel: BaseViewModel {
     let energyOrientation = ["E","I"]
     let informationProcessing = ["S","N"]
     let decisionMaking = ["F","T"]
@@ -15,24 +15,35 @@ final class ProfileNicknameViewModel {
     var mbtiCounter = Array(repeating: false, count: 4)
     var currentMBTI = Array(repeating: "", count: 4)
     
-    let inputTextField: Observable<String?> = .init(nil)
-    let outputValidationText = Observable("")
-    let outputIsValid = Observable(false)
-
-    let inputCompleteButtonTapped: Observable<Profile?> = .init(nil)
-    let outputCompleteButtonTapped: Observable<Void?> = .init(nil)
+    struct Input {
+        let textField: Observable<String?> = .init(nil)
+        let completeButtonTapped: Observable<Profile?> = .init(nil)
+        let checkValidation: Observable<Void?> = .init(())
+    }
     
-    let inputCheckValidation: Observable<Void?> = .init(())
+    struct Output {
+        let validationText = Observable("")
+        let isValid = Observable(false)
+        let completeButtonTapped: Observable<Void?> = .init(nil)
+    }
+    
+    let input: Input
+    let output: Output
     
     init() {
-        print(#function, "profilenicknameviewmodel init")
-        inputTextField.bind { [weak self] _ in
+        input = Input()
+        output = Output()
+        transform()
+    }
+    
+    func transform() {
+        input.textField.bind { [weak self] _ in
             self?.checkValidaiton()
         }
-        inputCompleteButtonTapped.lazyBind { [weak self] profile in
+        input.completeButtonTapped.lazyBind { [weak self] profile in
             self?.completeButtonTapped(profile: profile)
         }
-        inputCheckValidation.lazyBind { [weak self] _ in
+        input.checkValidation.lazyBind { [weak self] _ in
             print(#function, "셀 클릭")
             self?.checkValidaiton()
         }
@@ -43,7 +54,7 @@ final class ProfileNicknameViewModel {
             UserDefaultsManager.shared.setData(kind: .profile, type: Profile.self, data: profile)
             UserDefaultsManager.shared.isOnboarded = true
             UserDefaultsManager.shared.mbti = currentMBTI.joined()
-            outputCompleteButtonTapped.value = ()
+            output.completeButtonTapped.value = ()
         } else {
             print(#function, "unexpected nil")
             fatalError()
@@ -52,34 +63,34 @@ final class ProfileNicknameViewModel {
     
     private func checkValidaiton() {
         print(#function)
-        guard let nickname = inputTextField.value else {
-            outputValidationText.value = ""
-            outputIsValid.value = false
+        guard let nickname = input.textField.value else {
+            output.validationText.value = ""
+            output.isValid.value = false
             return
         }
         
         if nickname.isEmpty {
-            outputValidationText.value = ""
+            output.validationText.value = ""
             return
         }
         
         if nickname.count < 2 || nickname.count > 10 {
-            outputValidationText.value = "2글자 이상 10글자 미만으로 설정해주세요"
-            outputIsValid.value = false
+            output.validationText.value = "2글자 이상 10글자 미만으로 설정해주세요"
+            output.isValid.value = false
             return
         }
         if nickname.contains(/[@#$%]/) {
-            outputValidationText.value = "닉네임에 @,#,$,%는 포함할 수 없어요."
-            outputIsValid.value = false
+            output.validationText.value = "닉네임에 @,#,$,%는 포함할 수 없어요."
+            output.isValid.value = false
             return
         }
         if nickname.contains(/\d/) {
-            outputValidationText.value = "닉네임에 숫자는 포함할 수 없어요."
-            outputIsValid.value = false
+            output.validationText.value = "닉네임에 숫자는 포함할 수 없어요."
+            output.isValid.value = false
             return
         } else {
-            outputValidationText.value = "사용할 수 있는 닉네임이에요."
-            outputIsValid.value = true
+            output.validationText.value = "사용할 수 있는 닉네임이에요."
+            output.isValid.value = true
             return
         }
     }

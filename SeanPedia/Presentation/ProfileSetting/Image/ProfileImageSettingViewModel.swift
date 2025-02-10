@@ -7,17 +7,32 @@
 
 import Foundation
 
-final class ProfileImageSettingViewModel {
+final class ProfileImageSettingViewModel: BaseViewModel {
+    
     var lastSelected: IndexPath?
     var selectedProfileImage: String?
     var dismissCompletion: ((String) -> Void)?
     
-    let inputSelectedImage: Observable<String?> = .init(nil)
-    let outputSelectedImage: Observable<String?> = .init(nil)
+    struct Input {
+        let selectedImage: Observable<String?> = .init(nil)
+    }
+    
+    struct Output {
+        let selectedImage: Observable<String?> = .init(nil)
+    }
+    
+    let input: Input
+    let output: Output
     
     init() {
-        inputSelectedImage.bind { [weak self] selectedImageName in
-            self?.outputSelectedImage.value = selectedImageName
+        input = Input()
+        output = Output()
+        transform()
+    }
+    
+    func transform() {
+        input.selectedImage.bind { [weak self] selectedImageName in
+            self?.output.selectedImage.value = selectedImageName
         }
     }
 }

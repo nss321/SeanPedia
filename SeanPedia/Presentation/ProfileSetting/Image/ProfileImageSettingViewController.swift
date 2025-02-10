@@ -23,7 +23,7 @@ final class ProfileImageSettingViewController: BaseViewController {
     }
     
     private func bind() {
-        viewModel.outputSelectedImage.lazyBind { [weak self] selectedImage in
+        viewModel.output.selectedImage.lazyBind { [weak self] selectedImage in
             guard let completion = self?.viewModel.dismissCompletion, let selectedImage else { fatalError() }
             completion(selectedImage)
             self?.navigationController?.popViewController(animated: true)
@@ -40,7 +40,7 @@ final class ProfileImageSettingViewController: BaseViewController {
             image: UIImage(systemName: "chevron.left"),
             primaryAction: UIAction(handler: { [weak self] _ in
                 if let selectedImage = self?.profileImageSettingView.selectedImage {
-                    self?.viewModel.inputSelectedImage.value = selectedImage
+                    self?.viewModel.input.selectedImage.value = selectedImage
                 }
             }))
         navigationItem.title = "프로필 이미지 설정"
