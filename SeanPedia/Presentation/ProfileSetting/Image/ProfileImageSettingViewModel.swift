@@ -31,7 +31,7 @@ final class ProfileImageSettingViewModel: BaseViewModel {
     }
     
     func transform() {
-        input.selectedImage.bind { [weak self] selectedImageName in
+        input.selectedImage.lazyBind { [weak self] selectedImageName in
             self?.output.selectedImage.value = selectedImageName
         }
     }

@@ -22,11 +22,17 @@ final class ProfileImageSettingViewController: BaseViewController {
         bind()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if let selectedImage = profileImageSettingView.selectedImage {
+            viewModel.input.selectedImage.value = selectedImage
+        }
+    }
+    
     private func bind() {
         viewModel.output.selectedImage.lazyBind { [weak self] selectedImage in
             guard let completion = self?.viewModel.dismissCompletion, let selectedImage else { fatalError() }
             completion(selectedImage)
-            self?.navigationController?.popViewController(animated: true)
         }
     }
     
@@ -39,9 +45,7 @@ final class ProfileImageSettingViewController: BaseViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "chevron.left"),
             primaryAction: UIAction(handler: { [weak self] _ in
-                if let selectedImage = self?.profileImageSettingView.selectedImage {
-                    self?.viewModel.input.selectedImage.value = selectedImage
-                }
+                self?.navigationController?.popViewController(animated: true)
             }))
         navigationItem.title = "프로필 이미지 설정"
         navigationController?.interactivePopGestureRecognizer?.isEnabled = true
