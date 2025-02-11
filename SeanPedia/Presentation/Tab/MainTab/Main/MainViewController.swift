@@ -9,8 +9,8 @@ import UIKit
 
 final class MainViewController: BaseViewController {
     
-    let mainView = MainView()
-    let viewModel = MainViewModel()
+    private let mainView = MainView()
+    private let viewModel = MainViewModel()
     
     override func loadView() {
         view = mainView
@@ -40,13 +40,13 @@ final class MainViewController: BaseViewController {
     }
     
     private func bind() {
-        viewModel.output.outputTodayMovie.bind { [weak self] _ in
+        viewModel.output.todayMovie.bind { [weak self] _ in
             self?.mainView.todayMovieCollectionView.reloadData()
         }
-        viewModel.output.outputKeyword.bind { [weak self] _ in
+        viewModel.output.keyword.bind { [weak self] _ in
             self?.mainView.recentSearchCollectionView.reloadData()
         }
-        viewModel.output.outputProfile.lazyBind { [weak self] profile in
+        viewModel.output.profile.lazyBind { [weak self] profile in
             if let profile {
                 self?.mainView.profileCard.setProfileCard(profile: profile)
             } else {
@@ -75,8 +75,8 @@ final class MainViewController: BaseViewController {
             image: UIImage(systemName: "magnifyingglass"),
             primaryAction: UIAction(handler: { [weak self] _ in
                 let vc = SearchViewController()
-                vc.completion = { [weak self] keyword in
-                    self?.viewModel.input.inputKeyword.value = keyword
+                vc.viewModel.completion = { [weak self] keyword in
+                    self?.viewModel.input.keyword.value = keyword
                 }
                 self?.navigationController?.pushViewController(vc, animated: true)
             }))
@@ -86,7 +86,7 @@ final class MainViewController: BaseViewController {
         print(#function, "profile card tapped")
         let vc = MyProfileEditViewController()
         vc.completion = { [weak self] profile in
-            self?.viewModel.input.inputProfile.value = profile
+            self?.viewModel.input.profile.value = profile
         }
         let presentVC = UINavigationController(rootViewController: vc)
         presentVC.modalPresentationStyle = .fullScreen
@@ -159,7 +159,7 @@ extension MainViewController: UICollectionViewDataSource, UICollectionViewDelega
         switch collectionView {
         case mainView.recentSearchCollectionView:
             let vc = SearchViewController()
-            vc.keyword = viewModel.recentSearchKeywords[indexPath.item]
+            vc.viewModel.keyword = viewModel.recentSearchKeywords[indexPath.item]
             self.navigationController?.pushViewController(vc, animated: true)
             
         case mainView.todayMovieCollectionView:

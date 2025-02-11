@@ -8,28 +8,28 @@
 final class MainViewModel: BaseViewModel {
     
     var todayMovieList: [MovieInfo] {
-        if let movieList = output.outputTodayMovie.value {
+        if let movieList = output.todayMovie.value {
             return movieList
         }
         return []
     }
     
     var recentSearchKeywords: [String] {
-        if let keywordList = output.outputKeyword.value {
+        if let keywordList = output.keyword.value {
             return keywordList
         }
         return []
     }
     
     struct Input {
-        let inputKeyword: Observable<String?> = .init(nil)
-        let inputProfile: Observable<Profile?> = .init(nil)
+        let keyword: Observable<String?> = .init(nil)
+        let profile: Observable<Profile?> = .init(nil)
     }
     
     struct Output {
-        let outputTodayMovie: Observable<[MovieInfo]?> = .init(nil)
-        let outputKeyword: Observable<[String]?> = .init(nil)
-        let outputProfile: Observable<Profile?> = .init(nil)
+        let todayMovie: Observable<[MovieInfo]?> = .init(nil)
+        let keyword: Observable<[String]?> = .init(nil)
+        let profile: Observable<Profile?> = .init(nil)
     }
     
     let input: Input
@@ -44,43 +44,43 @@ final class MainViewModel: BaseViewModel {
     }
     
     func transform() {
-        input.inputKeyword.bind { [weak self] keyword in
+        input.keyword.bind { [weak self] keyword in
             if let keyword {
-                self?.output.outputKeyword.value?.append(keyword)
+                self?.output.keyword.value?.append(keyword)
             } else {
                 print(#function, "failed to unwrapping keyword. keyword didn't append to collectionview")
                 return
             }
         }
-        input.inputProfile.bind { [weak self] profile in
-            self?.output.outputProfile.value = profile
+        input.profile.bind { [weak self] profile in
+            self?.output.profile.value = profile
         }
     }
     
-    func fetchTodayMovieList() {
+    private func fetchTodayMovieList() {
         NetworkService.shared.callPhotoRequest(
             api: .trending,
             type: TodayMovie.self) { [weak self] response in
 //                dump(response)
-                self?.output.outputTodayMovie.value = response.results
+                self?.output.todayMovie.value = response.results
             } failureHandler: { _ in
             }
     }
     
-    func fetchKeywords() {
-        output.outputKeyword.value = UserDefaultsManager.shared.recentSearchedKeywordList.keywords
+    private func fetchKeywords() {
+        output.keyword.value = UserDefaultsManager.shared.recentSearchedKeywordList.keywords
     }
     
     func popKeyword(index: Int) {
-        if let keyword = output.outputKeyword.value {
+        if let keyword = output.keyword.value {
             if (0...keyword.count).contains(index) {
-                output.outputKeyword.value?.remove(at: index)
+                output.keyword.value?.remove(at: index)
             }
         }
     }
     
     func removeAllofKeyword() {
-        output.outputKeyword.value?.removeAll()
+        output.keyword.value?.removeAll()
     }
     
     func saveRecentSearch() {

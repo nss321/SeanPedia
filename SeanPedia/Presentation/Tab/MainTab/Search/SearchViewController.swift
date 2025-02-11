@@ -10,37 +10,39 @@ import UIKit
 final class SearchViewController: BaseViewController {
     
     private let searchView = SearchView()
-    var completion: ((String) -> Void)?
-    var keyword: String = ""
-    var searchedResult: [MovieInfo] = [] {
-        didSet {
-            searchView.searchedMovieCollectionView.reloadData()
-        }
-    }
-    private var page = 1
-    private var totalPages = 0
-    private var totalResults = 0
-    private var currentIndex: Int {
-        searchedResult.count
-    }
-    
+    let viewModel = SearchViewModel()
+
     override func loadView() {
         view = searchView
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        bind()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         searchView.searchBar.becomeFirstResponder()
         
-        if !keyword.isEmpty {
-            searchView.searchBar.text = keyword
-            NetworkService.shared.callPhotoRequest(api: .search(query: keyword), type: Search.self) { Search in
-                self.searchedResult = Search.results
-                self.page = Search.page
-                self.totalPages = Search.total_pages
-                self.totalResults = Search.total_results
-            } failureHandler: { TMDBError in
-                dump(TMDBError)
+        if !viewModel.keyword.isEmpty {
+            searchView.searchBar.text = viewModel.keyword
+            viewModel.input.givenKeyword.value = viewModel.keyword
+        }
+    }
+    
+    private func bind() {
+        viewModel.output.searchedResult.bind { [weak self] _ in
+            self?.searchView.searchedMovieCollectionView.reloadData()
+        }
+        viewModel.output.isEmptyResult.bind { [weak self] isEmpty in
+            print(#function, isEmpty)
+            if isEmpty {
+                self?.searchView.noResult.isHidden = false
+                self?.searchView.searchedMovieCollectionView.isHidden = true
+            } else {
+                self?.searchView.noResult.isHidden = true
+                self?.searchView.searchedMovieCollectionView.isHidden = false
             }
         }
     }
@@ -71,15 +73,7 @@ extension SearchViewController: UICollectionViewDataSourcePrefetching {
         
         for item in indexPaths {
             print(#function, item)
-            if currentIndex - 3 == item.item && page < totalPages {
-                page += 1
-                NetworkService.shared.callPhotoRequest(api: .search(query: keyword, page: page), type: Search.self, completion: { Search in
-                    dump(Search.results)
-                    self.searchedResult.append(contentsOf: Search.results)
-                }, failureHandler: {
-                    dump($0)
-                })
-            }
+            viewModel.prefetchItems(indexPath: item)
         }
     }
 }
@@ -87,24 +81,11 @@ extension SearchViewController: UICollectionViewDataSourcePrefetching {
 
 extension SearchViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        if keyword == searchBar.text! { return }
-        keyword = searchBar.text!
-        completion!(keyword)
-        NetworkService.shared.callPhotoRequest(api: .search(query: keyword), type: Search.self) { Search in
-            if Search.results.isEmpty {
-                self.searchView.noResult.isHidden = false
-                self.searchView.searchedMovieCollectionView.isHidden = true
-            } else {
-                self.searchView.noResult.isHidden = true
-                self.searchView.searchedMovieCollectionView.isHidden = false
-                self.searchedResult = Search.results
-                self.page = Search.page
-                self.totalPages = Search.total_pages
-                self.totalResults = Search.total_results
-            }
-        } failureHandler: { TMDBError in
-            dump(TMDBError)
-        }
+        searchBar.resignFirstResponder()
+        if viewModel.keyword == searchBar.text! { return }
+        viewModel.keyword = searchBar.text!
+        viewModel.completion!(viewModel.keyword)
+        viewModel.input.typedKeyword.value = viewModel.keyword
     }
 }
 
@@ -116,14 +97,14 @@ extension SearchViewController: UIGestureRecognizerDelegate {
 
 extension SearchViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        searchedResult.count
+        viewModel.searchedResult.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let item = searchedResult[indexPath.item]
+        let item = viewModel.searchedResult[indexPath.item]
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchedMovieCollectionViewCell.id, for: indexPath) as! SearchedMovieCollectionViewCell
         cell.config(item: item)
-        if item == searchedResult.last {
+        if item == viewModel.searchedResult.last {
             cell.lastCell()
             return cell
         }
@@ -140,7 +121,7 @@ extension SearchViewController: UICollectionViewDataSource, UICollectionViewDele
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let vc = MovieDetailViewController()
-        vc.selectedMovie = searchedResult[indexPath.item]
+        vc.selectedMovie = viewModel.searchedResult[indexPath.item]
         self.navigationController?.pushViewController(vc, animated: true)
     }
     
