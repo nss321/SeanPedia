@@ -23,11 +23,13 @@ final class MainViewModel: BaseViewModel {
     
     struct Input {
         let inputKeyword: Observable<String?> = .init(nil)
+        let inputProfile: Observable<Profile?> = .init(nil)
     }
     
     struct Output {
         let outputTodayMovie: Observable<[MovieInfo]?> = .init(nil)
         let outputKeyword: Observable<[String]?> = .init(nil)
+        let outputProfile: Observable<Profile?> = .init(nil)
     }
     
     let input: Input
@@ -43,7 +45,15 @@ final class MainViewModel: BaseViewModel {
     
     func transform() {
         input.inputKeyword.bind { [weak self] keyword in
-            self?.output.outputKeyword.value?.append(keyword!)
+            if let keyword {
+                self?.output.outputKeyword.value?.append(keyword)
+            } else {
+                print(#function, "failed to unwrapping keyword. keyword didn't append to collectionview")
+                return
+            }
+        }
+        input.inputProfile.bind { [weak self] profile in
+            self?.output.outputProfile.value = profile
         }
     }
     

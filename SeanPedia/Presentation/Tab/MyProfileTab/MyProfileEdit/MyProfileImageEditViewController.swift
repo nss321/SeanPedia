@@ -59,8 +59,6 @@ extension MyProfileImageEditViewController: UICollectionViewDataSource, UICollec
         let item = profileImageList[indexPath.item]
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfileImageCollectionViewCell.id, for: indexPath) as! ProfileImageCollectionViewCell
-        
-        // TODO: 앞 뷰에서 선택된 이미지 선택된 상태로 컬렉션 뷰 로드
                 
         cell.configCell(image: item)
         

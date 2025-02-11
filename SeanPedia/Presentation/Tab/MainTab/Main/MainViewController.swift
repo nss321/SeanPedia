@@ -19,6 +19,7 @@ final class MainViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         bind()
+        NotificationCenter.default.addObserver(self, selector: #selector(receiveNoti), name: UIApplication.willResignActiveNotification, object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -43,8 +44,14 @@ final class MainViewController: BaseViewController {
             self?.mainView.todayMovieCollectionView.reloadData()
         }
         viewModel.output.outputKeyword.bind { [weak self] _ in
-            print(#function)
             self?.mainView.recentSearchCollectionView.reloadData()
+        }
+        viewModel.output.outputProfile.lazyBind { [weak self] profile in
+            if let profile {
+                self?.mainView.profileCard.setProfileCard(profile: profile)
+            } else {
+                print(#function, "failed to unwrapping profile. selected profile image didn't changed.")
+            }
         }
     }
     
@@ -64,7 +71,6 @@ final class MainViewController: BaseViewController {
     
     override func configNavigation() {
         navigationItem.title = "오늘의 영화"
-        
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "magnifyingglass"),
             primaryAction: UIAction(handler: { [weak self] _ in
@@ -77,15 +83,20 @@ final class MainViewController: BaseViewController {
     }
     
     @objc private func presentProfileSettingViewController() {
+        print(#function, "profile card tapped")
         let vc = MyProfileEditViewController()
-        vc.completion = { [self] profile in
-            mainView.profileCard.setProfileCard(profile: profile)
+        vc.completion = { [weak self] profile in
+            self?.viewModel.input.inputProfile.value = profile
         }
         let presentVC = UINavigationController(rootViewController: vc)
         presentVC.modalPresentationStyle = .fullScreen
         present(presentVC, animated: true)
     }
     
+    @objc
+    func receiveNoti() {
+        viewModel.saveRecentSearch()
+    }
 }
 
 extension MainViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
@@ -105,8 +116,6 @@ extension MainViewController: UICollectionViewDataSource, UICollectionViewDelega
         case mainView.recentSearchCollectionView:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecentSearchCollectionViewCell.id, for: indexPath) as! RecentSearchCollectionViewCell
             cell.config(title: viewModel.recentSearchKeywords[indexPath.item], action: UIAction(handler: { [weak self] _ in
-//                self.recentSearchKeywords.remove(at: indexPath.item)
-//                self.mainView.recentSearchCollectionView.reloadData()
                 self?.viewModel.popKeyword(index: indexPath.item)
             }))
             return cell
