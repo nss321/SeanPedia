@@ -49,6 +49,11 @@ final class ProfileNicknameViewController: BaseViewController {
         nicknameView.profileImageView.changeAction(gesture: UITapGestureRecognizer(target: self, action: #selector(navigateProfileSettingView)))
         
         nicknameView.nicknameTextField.addTarget(self, action: #selector(nicknameTextFieldDidChanged), for: .editingChanged)
+        
+        let dismiss = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        dismiss.cancelsTouchesInView = false
+        nicknameView.addGestureRecognizer(dismiss)
+        
     }
     
     override func configNavigation() {
@@ -81,6 +86,10 @@ final class ProfileNicknameViewController: BaseViewController {
     
     @objc private func nicknameTextFieldDidChanged() {
         viewModel.input.textField.value = nicknameView.nicknameTextField.text
+    }
+    
+    @objc private func dismissKeyboard(_ sender: UITapGestureRecognizer) {
+        nicknameView.endEditing(true)
     }
 }
 
