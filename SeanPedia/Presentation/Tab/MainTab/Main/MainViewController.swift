@@ -10,17 +10,7 @@ import UIKit
 final class MainViewController: BaseViewController {
     
     let mainView = MainView()
-    var todayMovieList: [MovieInfo] = [] {
-        didSet {
-            mainView.todayMovieCollectionView.reloadData()
-        }
-    }
-    
-    var recentSearchKeywords: [String] = [] {
-        didSet {
-            mainView.recentSearchCollectionView.reloadData()
-        }
-    }
+    let viewModel = MainViewModel()
     
     override func loadView() {
         view = mainView
@@ -28,15 +18,13 @@ final class MainViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        recentSearchKeywords = UserDefaultsManager.shared.recentSearchedKeywordList.keywords
+        bind()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        print(#function, recentSearchKeywords)
-        fetchTodayMovieList()
         self.mainView.profileCard.updateProfileCard()
-        if recentSearchKeywords.isEmpty {
+        if viewModel.recentSearchKeywords.isEmpty {
             mainView.recentSearchCollectionView.isHidden = true
             mainView.noResult.isHidden = false
         } else {
@@ -47,15 +35,23 @@ final class MainViewController: BaseViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        print(#function, recentSearchKeywords)
-        let newValue = RecentSearch(keywords: recentSearchKeywords)
-        UserDefaultsManager.shared.setData(kind: .recentlyKeyword, type: RecentSearch.self, data: newValue)
+        viewModel.saveRecentSearch()
+    }
+    
+    private func bind() {
+        viewModel.output.outputTodayMovie.bind { [weak self] _ in
+            self?.mainView.todayMovieCollectionView.reloadData()
+        }
+        viewModel.output.outputKeyword.bind { [weak self] _ in
+            print(#function)
+            self?.mainView.recentSearchCollectionView.reloadData()
+        }
     }
     
     override func configView() {
         mainView.profileCard.setGestureToProfileContainer(gesture: UITapGestureRecognizer(target: self, action: #selector(presentProfileSettingViewController)))
-        mainView.deleteSearchingHistoryButton.addAction(UIAction(handler: { _ in
-            self.recentSearchKeywords.removeAll()
+        mainView.deleteSearchingHistoryButton.addAction(UIAction(handler: { [weak self] _ in
+            self?.viewModel.removeAllofKeyword()
         }), for: .touchUpInside)
     }
     
@@ -71,12 +67,12 @@ final class MainViewController: BaseViewController {
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "magnifyingglass"),
-            primaryAction: UIAction(handler: { _ in
+            primaryAction: UIAction(handler: { [weak self] _ in
                 let vc = SearchViewController()
-                vc.completion = {
-                    self.recentSearchKeywords.append($0)
+                vc.completion = { [weak self] keyword in
+                    self?.viewModel.input.inputKeyword.value = keyword
                 }
-                self.navigationController?.pushViewController(vc, animated: true)
+                self?.navigationController?.pushViewController(vc, animated: true)
             }))
     }
     
@@ -90,21 +86,15 @@ final class MainViewController: BaseViewController {
         present(presentVC, animated: true)
     }
     
-    func fetchTodayMovieList() {
-        NetworkService.shared.callPhotoRequest(api: .trending, type: TodayMovie.self) {
-            self.todayMovieList = $0.results
-        } failureHandler: { _ in
-        }
-    }
 }
 
 extension MainViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch collectionView {
         case mainView.recentSearchCollectionView:
-            return recentSearchKeywords.count
+            return viewModel.recentSearchKeywords.count
         case mainView.todayMovieCollectionView:
-            return todayMovieList.count
+            return viewModel.todayMovieList.count
         default:
             return 0
         }
@@ -114,14 +104,15 @@ extension MainViewController: UICollectionViewDataSource, UICollectionViewDelega
         switch collectionView {
         case mainView.recentSearchCollectionView:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecentSearchCollectionViewCell.id, for: indexPath) as! RecentSearchCollectionViewCell
-            cell.config(title: recentSearchKeywords[indexPath.item], action: UIAction(handler: { _ in
-                self.recentSearchKeywords.remove(at: indexPath.item)
-                self.mainView.recentSearchCollectionView.reloadData()
+            cell.config(title: viewModel.recentSearchKeywords[indexPath.item], action: UIAction(handler: { [weak self] _ in
+//                self.recentSearchKeywords.remove(at: indexPath.item)
+//                self.mainView.recentSearchCollectionView.reloadData()
+                self?.viewModel.popKeyword(index: indexPath.item)
             }))
             return cell
         case mainView.todayMovieCollectionView:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TodayMovieCollectionViewCell.id, for: indexPath) as! TodayMovieCollectionViewCell
-            cell.config(item: todayMovieList[indexPath.item])
+            cell.config(item: viewModel.todayMovieList[indexPath.item])
             return cell
         default:
             return UICollectionViewCell()
@@ -132,7 +123,7 @@ extension MainViewController: UICollectionViewDataSource, UICollectionViewDelega
         switch collectionView {
         case mainView.recentSearchCollectionView:
             let label = UILabel(frame: .zero)
-            label.text = recentSearchKeywords[indexPath.item]
+            label.text = viewModel.recentSearchKeywords[indexPath.item]
             label.font = .systemFont(ofSize: 14)
             label.sizeToFit()
             let cellWidth = label.frame.width + CGFloat(smallMargin) * 4
@@ -159,12 +150,12 @@ extension MainViewController: UICollectionViewDataSource, UICollectionViewDelega
         switch collectionView {
         case mainView.recentSearchCollectionView:
             let vc = SearchViewController()
-            vc.keyword = recentSearchKeywords[indexPath.item]
+            vc.keyword = viewModel.recentSearchKeywords[indexPath.item]
             self.navigationController?.pushViewController(vc, animated: true)
             
         case mainView.todayMovieCollectionView:
             let vc = MovieDetailViewController()
-            vc.selectedMovie = todayMovieList[indexPath.item]
+            vc.selectedMovie = viewModel.todayMovieList[indexPath.item]
             self.navigationController?.pushViewController(vc, animated: true)
         default:
             print(#function, collectionView)
