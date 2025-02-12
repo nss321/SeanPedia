@@ -17,11 +17,6 @@ final class ProfileImageSettingViewController: BaseViewController {
     
     let viewModel = ProfileImageSettingViewModel()
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        bind()
-    }
-    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         if let selectedImage = profileImageSettingView.selectedImage {
@@ -29,7 +24,7 @@ final class ProfileImageSettingViewController: BaseViewController {
         }
     }
     
-    private func bind() {
+    override func bind() {
         viewModel.output.selectedImage.lazyBind { [weak self] selectedImage in
             guard let completion = self?.viewModel.dismissCompletion, let selectedImage else { fatalError() }
             completion(selectedImage)

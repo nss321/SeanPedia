@@ -17,12 +17,7 @@ final class MyProfileEditViewController: BaseViewController {
         view = myProfileView
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        bind()
-    }
-    
-    private func bind() {
+    override func bind() {
         viewModel.outputValidationText.bind { [self] string in
             myProfileView.notiLabel.text = string
         }

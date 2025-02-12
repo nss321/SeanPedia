@@ -18,13 +18,15 @@ final class MainViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        bind()
         NotificationCenter.default.addObserver(self, selector: #selector(receiveNoti), name: UIApplication.willResignActiveNotification, object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+//        print(#function, "메인 뷰컨 will appear")
         self.mainView.profileCard.updateProfileCard()
+//        print(UserDefaultsManager.shared.likedList)
+//        self.mainView.todayMovieCollectionView.reloadData()
         if viewModel.recentSearchKeywords.isEmpty {
             mainView.recentSearchCollectionView.isHidden = true
             mainView.noResult.isHidden = false
@@ -39,12 +41,13 @@ final class MainViewController: BaseViewController {
         viewModel.saveRecentSearch()
     }
     
-    private func bind() {
+    override func bind() {
         viewModel.output.todayMovie.bind { [weak self] _ in
             self?.mainView.todayMovieCollectionView.reloadData()
         }
         viewModel.output.keyword.bind { [weak self] _ in
             self?.mainView.recentSearchCollectionView.reloadData()
+            
         }
         viewModel.output.profile.lazyBind { [weak self] profile in
             if let profile {
@@ -163,8 +166,11 @@ extension MainViewController: UICollectionViewDataSource, UICollectionViewDelega
             self.navigationController?.pushViewController(vc, animated: true)
             
         case mainView.todayMovieCollectionView:
+            print("뷰컨 인스턴스 생성 전")
             let vc = MovieDetailViewController()
-            vc.selectedMovie = viewModel.todayMovieList[indexPath.item]
+            print("뷰컨 인스턴스 생성 후")
+            vc.viewModel.input.selectedMovie.value = viewModel.todayMovieList[indexPath.item]
+            print("뷰모델에 셀렉트 무비 초기화")
             self.navigationController?.pushViewController(vc, animated: true)
         default:
             print(#function, collectionView)

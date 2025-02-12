@@ -220,18 +220,23 @@ final class MovieDetailView: BaseView {
         self.pages = pages
     }
     
-    func fetchMovieData(movie: MovieInfo) {
-        overview.text = movie.overview.isEmpty ? "요약 정보가 제공되지 않습니다." : movie.overview
-        var genre: [String] = []
-        
-        for i in 0..<movie.genre_ids.count {
-            if i > 1 {
-                break
-            } else {
-                genre.append("\(Genre.genreId(movie.genre_ids[i]))")
+    func fetchMovieData(movie: MovieInfo?) {
+        if let movie {
+            overview.text = movie.overview.isEmpty ? "요약 정보가 제공되지 않습니다." : movie.overview
+            var genre: [String] = []
+            
+            for i in 0..<movie.genre_ids.count {
+                if i > 1 {
+                    break
+                } else {
+                    genre.append("\(Genre.genreId(movie.genre_ids[i]))")
+                }
             }
+            infoLabel.attributedText = configInfoLabel(date: movie.release_date, voteAvg: movie.vote_average, genre: genre)
+        } else {
+            overview.text = "영화 정보를 불러올 수 없습니다."
+            infoLabel.text = "영화 정보를 불러올 수 없음"
         }
-        infoLabel.attributedText = configInfoLabel(date: movie.release_date, voteAvg: movie.vote_average, genre: genre)
     }
     
     private func configInfoLabel(date: String, voteAvg: Double, genre: [String]) -> NSAttributedString {

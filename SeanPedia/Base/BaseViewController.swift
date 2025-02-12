@@ -14,11 +14,16 @@ class BaseViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        bind()
         configHierarchy()
         configLayout()
         configView()
         configDelegate()
         configNavigation()
+    }
+    
+    func bind() {
+        
     }
     
     func configHierarchy() {

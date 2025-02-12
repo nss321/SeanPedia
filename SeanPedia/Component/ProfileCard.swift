@@ -99,7 +99,7 @@ final class ProfileCard: BaseView {
     }
     
     func updateMovieBoxNumber() {
-        let numberOfLike = UserDefaultsManager.shared.likedList.likedMovie.count
+        let numberOfLike = UserDefaultsManager.shared.likedList.count
         var attrTitle = AttributedString("\(numberOfLike)개의 무비박스 보관중")
         attrTitle.foregroundColor = UIColor.seanPediaWhite
         attrTitle.font = .systemFont(ofSize: 14, weight: .bold)
@@ -107,6 +107,7 @@ final class ProfileCard: BaseView {
     }
     
     func updateProfileCard() {
+        updateMovieBoxNumber()
         if let profile = UserDefaultsManager.shared.getStoredData(kind: .profile, type: Profile.self) {
             nicknameLabel.text = profile.nickname
             profileImageView.selectedImage = profile.profileImage

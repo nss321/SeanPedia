@@ -16,12 +16,7 @@ final class ProfileNicknameViewController: BaseViewController {
         view = nicknameView
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        bind()
-    }
-    
-    func bind() {
+    override func bind() {
         viewModel.output.validationText.bind { [weak self] string in
             self?.nicknameView.notiLabel.isHidden = string.isEmpty
             self?.nicknameView.notiLabel.text = string

@@ -16,11 +16,6 @@ final class SearchViewController: BaseViewController {
         view = searchView
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        bind()
-    }
-    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         searchView.searchBar.becomeFirstResponder()
@@ -31,7 +26,7 @@ final class SearchViewController: BaseViewController {
         }
     }
     
-    private func bind() {
+    override func bind() {
         viewModel.output.searchedResult.bind { [weak self] _ in
             self?.searchView.searchedMovieCollectionView.reloadData()
         }
@@ -121,7 +116,7 @@ extension SearchViewController: UICollectionViewDataSource, UICollectionViewDele
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let vc = MovieDetailViewController()
-        vc.selectedMovie = viewModel.searchedResult[indexPath.item]
+        vc.viewModel.input.selectedMovie.value = viewModel.searchedResult[indexPath.item]
         self.navigationController?.pushViewController(vc, animated: true)
     }
     

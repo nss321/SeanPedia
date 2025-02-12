@@ -23,7 +23,7 @@ final class TodayMovieCollectionViewCell: BaseCollectionViewCell {
     private var isLiked: Bool = false {
         didSet {
             self.likeButton.configuration?.image = UIImage(systemName: isLiked ? "heart.fill" : "heart")?.withTintColor(.seanPediaAccent, renderingMode: .alwaysOriginal)
-            self.saveLikeState()
+//            self.saveLikeState()
         }
     }
     private var alreadyLiked = false
@@ -101,7 +101,7 @@ final class TodayMovieCollectionViewCell: BaseCollectionViewCell {
         movieSummaryLabel.text = item.overview.isEmpty ? "요약 정보가 없습니다." : item.overview
         
         self.id = item.id
-        if UserDefaultsManager.shared.likedList.likedMovie.contains(item.id) {
+        if UserDefaultsManager.shared.likedList.contains(item.id) {
             self.isLiked = true
             self.alreadyLiked = true
         }
@@ -110,12 +110,12 @@ final class TodayMovieCollectionViewCell: BaseCollectionViewCell {
     private func saveLikeState() {
         var newList = UserDefaultsManager.shared.likedList
         if self.isLiked && !alreadyLiked {
-            newList.likedMovie.append(self.id)
-            UserDefaultsManager.shared.setData(kind: .likedMovie, type: LikedList.self, data: newList)
+            newList.append(self.id)
+            UserDefaultsManager.shared.setData(kind: .likedMovie, type: [Int].self, data: newList)
         } else if !self.isLiked && alreadyLiked {
-            if let index = newList.likedMovie.firstIndex(of: self.id) {
-                newList.likedMovie.remove(at: index)
-                UserDefaultsManager.shared.setData(kind: .likedMovie, type: LikedList.self, data: newList)
+            if let index = newList.firstIndex(of: self.id) {
+                newList.remove(at: index)
+                UserDefaultsManager.shared.setData(kind: .likedMovie, type: [Int].self, data: newList)
             }
         }
     }

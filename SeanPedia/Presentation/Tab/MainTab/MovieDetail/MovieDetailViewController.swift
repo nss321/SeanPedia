@@ -10,72 +10,37 @@ import UIKit
 final class MovieDetailViewController: BaseViewController {
     
     private let movieDetailView = MovieDetailView()
-    private var group = DispatchGroup()
-    var selectedMovie: MovieInfo?
-    private var castingList: [CastInfo] = []
-    private var posterList: [PosterImage] = []
-    private var isLiked = false  {
-        didSet {
-            navigationItem.rightBarButtonItem?.image = UIImage(systemName: isLiked ? "heart.fill" : "heart")
-        }
-    }
-    private var likedList: LikedList {
-        get {
-            if let list = UserDefaultsManager.shared.getStoredData(kind: .likedMovie, type: LikedList.self) {
-                return list
-            } else {
-                return LikedList(likedMovie: [])
-            }
-        }
-    }
+    let viewModel = MovieDetailViewModel()
+    
     override func loadView() {
         view = movieDetailView
     }
     
-    override func configView() {
-        if let storedData = UserDefaultsManager.shared.getStoredData(kind: .likedMovie, type: LikedList.self
-        ) {
-            print(#function, storedData.likedMovie)
-        } else {
-            print(#function, "없는데?????")
-        }
-        
-        guard let selectedMovie else {
-            print(#function, "selected movie nil")
-            return
-        }
-        movieDetailView.fetchMovieData(movie: selectedMovie)
-        
-        group.enter()
-        NetworkService.shared.callPhotoRequest(api: .images(id: selectedMovie.id), type: Images.self) { Images in
-//            dump(Images)
-            var filePaths:[String] = []
-            if !Images.backdrops.isEmpty {
-                for i in (0..<Images.backdrops.count) {
-                    if i == 5 { break }
-                    filePaths.append(Images.backdrops[i].filePath)
-                }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        viewModel.saveLikeState()
+    }
+
+    override func bind() {
+        viewModel.output.movieImage.lazyBind { [weak self] images in
+            if let images, let filePaths = self?.viewModel.makeFilePathList(images: images) {
+                self?.movieDetailView.configPages(data: filePaths)
+                self?.movieDetailView.posterCollectionView.reloadData()
             }
-            self.movieDetailView.configPages(data: filePaths)
-            self.posterList = Images.posters
-            self.group.leave()
-        } failureHandler: { TMDBError in
-            dump(TMDBError)
         }
+        viewModel.output.castingList.lazyBind { [weak self] _ in
+            self?.movieDetailView.castCollectionView.reloadData()
+        }
+        viewModel.output.isLiked.lazyBind { [weak self] isLiked in
+            if let isLiked {
+                self?.navigationItem.rightBarButtonItem?.image = UIImage(systemName: isLiked ? "heart.fill" : "heart")
+            }
+        }
+    }
 
-        group.enter()
-        NetworkService.shared.callPhotoRequest(api: .credit(id: selectedMovie.id), type: Credit.self) { Credit in
-            self.castingList = Credit.cast
-            self.group.leave()
-        } failureHandler: { TMDBError in
-            dump(TMDBError)
-        }
-
-        group.notify(queue: .main) {
-            self.movieDetailView.castCollectionView.reloadData()
-            self.movieDetailView.posterCollectionView.reloadData()
-        }
-                
+    override func configView() {
+        movieDetailView.fetchMovieData(movie: viewModel.selectedMovie)
+        viewModel.fetchIsLiked()
     }
     
     override func configDelegate() {
@@ -88,42 +53,49 @@ final class MovieDetailViewController: BaseViewController {
     }
     
     override func configNavigation() {
-        guard let selectedMovie = self.selectedMovie else {
-            print(#function, "selected movie nil")
+        guard let selectedMovie = viewModel.selectedMovie, let isLiked = viewModel.isLiked else {
+            print(#function, "selected movie or isLiked nil. check MovieDetailViewModel properties.")
             return
         }
         
-        let alreadyLiked = likedList.likedMovie.contains(selectedMovie.id)
-        let image = UIImage(systemName: alreadyLiked ? "heart.fill" : "heart")
-        self.isLiked = alreadyLiked ? true : false
+//        let alreadyLiked = UserDefaultsManager.shared.likedList.likedMovie.contains(selectedMovie.id)
+//        let image = UIImage(systemName: alreadyLiked ? "heart.fill" : "heart")
+//        self.isLiked = alreadyLiked ? true : false
+        
+        let image = UIImage(systemName: isLiked ? "heart.fill" : "heart")
+//        let image = UIImage(systemName: "heart")
         
         navigationItem.title = selectedMovie.title
         navigationItem.leftBarButtonItem = UIBarButtonItem(
-            title: nil,
             image: UIImage(systemName: "chevron.left"),
-            primaryAction: UIAction(handler: { _ in
-                var newList = self.likedList
-                if self.isLiked && !alreadyLiked {
-                    newList.likedMovie.append(selectedMovie.id)
-                    UserDefaultsManager.shared.setData(kind: .likedMovie, type: LikedList.self, data: newList)
-                } else if !self.isLiked && alreadyLiked {
-                    if let index = newList.likedMovie.firstIndex(of: selectedMovie.id) {
-                        newList.likedMovie.remove(at: index)
-                        UserDefaultsManager.shared.setData(kind: .likedMovie, type: LikedList.self, data: newList)
-                    }
-                }
-                self.navigationController?.popViewController(animated: true)
-            }),
-            menu: nil)
+            primaryAction: UIAction(handler: { [weak self] _ in
+                // TODO: vc pop 시 좋아요 상태 저장
+//
+//                var newList = UserDefaultsManager.shared.likedList
+//                
+//                
+//                
+//                if self?.viewModel.isLiked && !alreadyLiked {
+//                    newList.likedMovie.append(selectedMovie.id)
+//                    UserDefaultsManager.shared.setData(kind: .likedMovie, type: LikedList.self, data: newList)
+//                } else if !self?.isLiked && alreadyLiked {
+//                    if let index = newList.likedMovie.firstIndex(of: selectedMovie.id) {
+//                        newList.likedMovie.remove(at: index)
+//                        UserDefaultsManager.shared.setData(kind: .likedMovie, type: LikedList.self, data: newList)
+//                    }
+//                }
+
+                self?.navigationController?.popViewController(animated: true)
+            })
+        )
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(
-            title: nil,
             image: image,
             primaryAction: UIAction(handler: { _ in
-                self.isLiked.toggle()
+                self.viewModel.input.isLiked.value?.toggle()
                 print("좋아요 💝")
-            }),
-            menu: nil)
+            })
+        )
     }
 }
 
@@ -150,9 +122,9 @@ extension MovieDetailViewController: UICollectionViewDataSource, UICollectionVie
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch collectionView {
         case movieDetailView.castCollectionView:
-            return castingList.count
+            return viewModel.castingList.count
         case movieDetailView.posterCollectionView:
-            return posterList.count
+            return viewModel.posterList.count
         default:
             return 0
         }
@@ -163,12 +135,12 @@ extension MovieDetailViewController: UICollectionViewDataSource, UICollectionVie
         switch collectionView {
         case movieDetailView.castCollectionView:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CastCollectionViewCell.id, for: indexPath) as! CastCollectionViewCell
-            cell.config(item: castingList[item])
+            cell.config(item: viewModel.castingList[item])
             return cell
             
         case movieDetailView.posterCollectionView:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PosterCollectionViewCell.id, for: indexPath) as! PosterCollectionViewCell
-            cell.config(item: posterList[item])
+            cell.config(item: viewModel.posterList[item])
             return cell
         default:
             return UICollectionViewCell()

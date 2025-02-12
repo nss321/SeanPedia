@@ -38,19 +38,22 @@ final class UserDefaultsManager {
         }
     }
     
-    var likedList: LikedList {
+    var likedList: [Int] {
         get {
-            if let list = UserDefaultsManager.shared.getStoredData(kind: .likedMovie, type: LikedList.self) {
+            if let list = userDefaults.array(forKey: Key.likedMovie.rawValue) as? [Int] {
                 return list
             } else {
-                return LikedList(likedMovie: [])
+                return []
             }
+        }
+        set {
+            userDefaults.set(newValue, forKey: Key.likedMovie.rawValue)
         }
     }
     
     var recentSearchedKeywordList: RecentSearch {
         get {
-            if let list = UserDefaultsManager.shared.getStoredData(kind: .recentlyKeyword, type: RecentSearch.self) {
+            if let list = getStoredData(kind: .recentlyKeyword, type: RecentSearch.self) {
                 return list
             } else {
                 return RecentSearch(keywords: [])
