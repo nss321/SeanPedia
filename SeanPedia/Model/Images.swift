@@ -13,9 +13,27 @@ struct Images: Decodable {
 }
 
 struct BackdropImage: Decodable {
-    let file_path: String
+    let filePath: String
+    
+    enum CodingKeys: String, CodingKey {
+        case filePath = "file_path"
+    }
+    
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.filePath = (try? container.decode(String.self, forKey: .filePath)) ?? ""
+    }
 }
 
 struct PosterImage: Decodable {
-    let file_path: String
+    let filePath: String
+    
+    enum CodingKeys: String, CodingKey {
+        case filePath = "file_path"
+    }
+    
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        filePath = (try? container.decode(String.self, forKey: .filePath)) ?? ""
+    }
 }

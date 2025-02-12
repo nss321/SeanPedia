@@ -12,6 +12,7 @@
 		1100FC5F2D43F33D004A4658 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1100FC5E2D43F33D004A4658 /* SnapKit */; };
 		1100FC622D43F34A004A4658 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 1100FC612D43F34A004A4658 /* Alamofire */; };
 		1100FC6B2D43FC0B004A4658 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 1100FC6A2D43FC04004A4658 /* .gitignore */; };
+		111A94422D5C1C2800F6030F /* SkeletonView in Frameworks */ = {isa = PBXBuildFile; productRef = 111A94412D5C1C2800F6030F /* SkeletonView */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +50,7 @@
 				1100FC622D43F34A004A4658 /* Alamofire in Frameworks */,
 				1100FC592D43F325004A4658 /* Kingfisher in Frameworks */,
 				1100FC5C2D43F331004A4658 /* Then in Frameworks */,
+				111A94422D5C1C2800F6030F /* SkeletonView in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -96,6 +98,7 @@
 				1100FC5B2D43F331004A4658 /* Then */,
 				1100FC5E2D43F33D004A4658 /* SnapKit */,
 				1100FC612D43F34A004A4658 /* Alamofire */,
+				111A94412D5C1C2800F6030F /* SkeletonView */,
 			);
 			productName = SeanPedia;
 			productReference = 1100FC3C2D43F1EE004A4658 /* SeanPedia.app */;
@@ -130,6 +133,7 @@
 				1100FC5A2D43F331004A4658 /* XCRemoteSwiftPackageReference "Then" */,
 				1100FC5D2D43F33D004A4658 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				1100FC602D43F34A004A4658 /* XCRemoteSwiftPackageReference "Alamofire" */,
+				111A94402D5C1C2800F6030F /* XCRemoteSwiftPackageReference "SkeletonView" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1100FC3D2D43F1EE004A4658 /* Products */;
@@ -410,6 +414,14 @@
 				minimumVersion = 5.10.2;
 			};
 		};
+		111A94402D5C1C2800F6030F /* XCRemoteSwiftPackageReference "SkeletonView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Juanpe/SkeletonView";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.31.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -432,6 +444,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 1100FC602D43F34A004A4658 /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
+		};
+		111A94412D5C1C2800F6030F /* SkeletonView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 111A94402D5C1C2800F6030F /* XCRemoteSwiftPackageReference "SkeletonView" */;
+			productName = SkeletonView;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

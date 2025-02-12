@@ -48,8 +48,15 @@ final class MovieDetailViewController: BaseViewController {
         
         group.enter()
         NetworkService.shared.callPhotoRequest(api: .images(id: selectedMovie.id), type: Images.self) { Images in
-            let filePaths = Images.backdrops[0..<5]
-            self.movieDetailView.configPages(data: filePaths.map { $0.file_path })
+//            dump(Images)
+            var filePaths:[String] = []
+            if !Images.backdrops.isEmpty {
+                for i in (0..<Images.backdrops.count) {
+                    if i == 5 { break }
+                    filePaths.append(Images.backdrops[i].filePath)
+                }
+            }
+            self.movieDetailView.configPages(data: filePaths)
             self.posterList = Images.posters
             self.group.leave()
         } failureHandler: { TMDBError in

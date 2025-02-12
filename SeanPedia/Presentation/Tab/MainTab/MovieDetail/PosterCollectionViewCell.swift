@@ -33,7 +33,7 @@ final class PosterCollectionViewCell: BaseCollectionViewCell {
     }
     
     func config(item: PosterImage) {
-        if let url = URL(string: Urls.w154Poster() + item.file_path) {
+        if let url = URL(string: Urls.w154Poster() + item.filePath) {
             posterImageView.kf.setImage(with: url)
         } else {
             print(#function, "poster profile path nil")
