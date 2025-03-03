@@ -18,7 +18,7 @@ final class MainView: BaseView {
     let recentSearchCollectionView = BaseCollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     let recentSearchNotiLabel = UILabel()
     let todayMovieLabel = UILabel()
-    lazy var todayMovieCollectionView = BaseCollectionView(frame: .zero, collectionViewLayout: layout())
+    lazy var todayMovieCollectionView = BaseCollectionView(frame: .zero, collectionViewLayout: todayMovieLayout())
     let noResult = UILabel()
     
     override func configHierarchy() {
@@ -125,7 +125,24 @@ final class MainView: BaseView {
         }
     }
     
-    private func layout() -> UICollectionViewLayout {
+    private func recentSearchedLayout() -> UICollectionViewLayout {
+        let layout = UICollectionViewFlowLayout()
+        
+//        let label = UILabel(frame: .zero)
+//        label.text = viewModel.recentSearchKeywords[indexPath.item]
+//        label.font = .systemFont(ofSize: 14)
+//        label.sizeToFit()
+//        let cellWidth = label.frame.width + CGFloat(smallMargin) * 4
+//        return CGSize(width: cellWidth, height: collectionView.frame.height)
+        
+        
+        layout.itemSize = CGSize(width: screenWidth / 2, height: screenHeight * 0.46)
+        layout.scrollDirection = .horizontal
+        layout.minimumInteritemSpacing = CGFloat(smallMargin / 2)
+        return layout
+    }
+    
+    private func todayMovieLayout() -> UICollectionViewLayout {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: screenWidth / 2, height: screenHeight * 0.46)
         layout.scrollDirection = .horizontal

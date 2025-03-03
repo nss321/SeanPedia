@@ -44,20 +44,14 @@ final class MainViewController: BaseViewController {
     }
     
     override func bind() {
-        let input = MainViewModel.Input()
-        let output = viewModel.transform2(input: input)
-        
         viewModel.todayMovieList2
             .asDriver()
-            .drive(mainView.todayMovieCollectionView.rx.items(cellIdentifier: TodayMovieCollectionViewCell.id, cellType: TodayMovieCollectionViewCell.self)) ({ row, element, cell in
+            .drive(
+                mainView.todayMovieCollectionView.rx.items(cellIdentifier: TodayMovieCollectionViewCell.id, cellType: TodayMovieCollectionViewCell.self)) ({ _, element, cell in
                 cell.config(item: element)
             })
             .disposed(by: disposeBag)
         
-        
-        viewModel.output.todayMovie.bind { [weak self] _ in
-            self?.mainView.todayMovieCollectionView.reloadData()
-        }
         viewModel.output.keyword.bind { [weak self] _ in
             self?.mainView.recentSearchCollectionView.reloadData()
             
@@ -69,7 +63,6 @@ final class MainViewController: BaseViewController {
                 print(#function, "failed to unwrapping profile. selected profile image didn't changed.")
             }
         }
-        
         mainView.todayMovieCollectionView.rx.modelSelected(MovieInfo.self)
             .bind(with: self) { owner, item in
                 print(item, "선택!!!")
@@ -121,58 +114,33 @@ final class MainViewController: BaseViewController {
 
 extension MainViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        switch collectionView {
-        case mainView.recentSearchCollectionView:
-            return viewModel.recentSearchKeywords.count
-        default:
-            return 0
-        }
+        return viewModel.recentSearchKeywords.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        switch collectionView {
-        case mainView.recentSearchCollectionView:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecentSearchCollectionViewCell.id, for: indexPath) as! RecentSearchCollectionViewCell
-            cell.config(title: viewModel.recentSearchKeywords[indexPath.item], action: UIAction(handler: { [weak self] _ in
-                self?.viewModel.popKeyword(index: indexPath.item)
-            }))
-            return cell
-        default:
-            return UICollectionViewCell()
-        }
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecentSearchCollectionViewCell.id, for: indexPath) as! RecentSearchCollectionViewCell
+        cell.config(title: viewModel.recentSearchKeywords[indexPath.item], action: UIAction(handler: { [weak self] _ in
+            self?.viewModel.popKeyword(index: indexPath.item)
+        }))
+        return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        switch collectionView {
-        case mainView.recentSearchCollectionView:
-            let label = UILabel(frame: .zero)
-            label.text = viewModel.recentSearchKeywords[indexPath.item]
-            label.font = .systemFont(ofSize: 14)
-            label.sizeToFit()
-            let cellWidth = label.frame.width + CGFloat(smallMargin) * 4
-            return CGSize(width: cellWidth, height: collectionView.frame.height)
-        default:
-            return CGSize(width: 0, height: 0)
-        }
+        let label = UILabel(frame: .zero)
+        label.text = viewModel.recentSearchKeywords[indexPath.item]
+        label.font = .systemFont(ofSize: 14)
+        label.sizeToFit()
+        let cellWidth = label.frame.width + CGFloat(smallMargin) * 4
+        return CGSize(width: cellWidth, height: collectionView.frame.height)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        switch collectionView {
-        case mainView.recentSearchCollectionView:
-            return CGFloat(smallMargin / 2)
-        default:
-            return 0
-        }
+        return CGFloat(smallMargin / 2)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        switch collectionView {
-        case mainView.recentSearchCollectionView:
-            let vc = SearchViewController()
-            vc.viewModel.keyword = viewModel.recentSearchKeywords[indexPath.item]
-            self.navigationController?.pushViewController(vc, animated: true)
-        default:
-            print(#function, collectionView)
-        }
+        let vc = SearchViewController()
+        vc.viewModel.keyword = viewModel.recentSearchKeywords[indexPath.item]
+        self.navigationController?.pushViewController(vc, animated: true)
     }
 }

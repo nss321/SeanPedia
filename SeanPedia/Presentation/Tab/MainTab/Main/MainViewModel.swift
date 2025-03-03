@@ -30,6 +30,7 @@ final class MainViewModel: BaseViewModel {
     }
     
     let todayMovieList2 =  BehaviorRelay<[MovieInfo]>(value: [])
+    let recentSearched = BehaviorRelay<[String]>(value: UserDefaultsManager.shared.recentSearchedKeywordList2)
     
     let input: Input
     let output: Output
@@ -59,8 +60,7 @@ final class MainViewModel: BaseViewModel {
     
     func transform2(input: Input) -> Output {
         
-        return Output(
-            )
+        return Output()
     }
     
     private func fetchTodayMovieList() {

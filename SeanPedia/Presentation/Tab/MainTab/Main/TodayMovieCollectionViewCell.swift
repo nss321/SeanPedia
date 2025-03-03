@@ -23,7 +23,6 @@ final class TodayMovieCollectionViewCell: BaseCollectionViewCell {
     private var isLiked: Bool = false {
         didSet {
             self.likeButton.configuration?.image = UIImage(systemName: isLiked ? "heart.fill" : "heart")?.withTintColor(.seanPediaAccent, renderingMode: .alwaysOriginal)
-//            self.saveLikeState()
         }
     }
     private var alreadyLiked = false

@@ -13,7 +13,7 @@ import Then
 final class SearchView: BaseView {
     
     let searchBar = UISearchBar()
-    let searchedMovieCollectionView = BaseCollectionView()
+    let searchedMovieCollectionView = BaseCollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     let noResult = UILabel()
     
     override func configHierarchy() {
