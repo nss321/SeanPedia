@@ -177,7 +177,7 @@
 				DEVELOPMENT_TEAM = W43DLLFB4Q;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SeanPedia/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "배정훈";
+				INFOPLIST_KEY_CFBundleDisplayName = SeanPedia;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -213,7 +213,7 @@
 				DEVELOPMENT_TEAM = W43DLLFB4Q;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SeanPedia/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "배정훈";
+				INFOPLIST_KEY_CFBundleDisplayName = SeanPedia;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;

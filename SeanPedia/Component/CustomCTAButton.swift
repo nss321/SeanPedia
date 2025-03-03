@@ -32,6 +32,21 @@ final class CustomCTAButton: UIButton {
         configuration = config
         
         self.snp.makeConstraints { $0.height.equalTo(40) }
+        
+        configurationUpdateHandler = { [weak self] button in
+            switch button.state {
+            case .disabled:
+                self?.configuration?.background.strokeColor = .seanPediaGray
+                self?.configuration?.baseForegroundColor = .seanPediaGray
+            case .normal:
+                self?.configuration?.background.strokeColor = .seanPediaAccent
+                self?.configuration?.baseForegroundColor = .seanPediaAccent
+            default:
+                self?.configuration?.background.backgroundColor = .seanPediaBlack
+                self?.configuration?.background.strokeWidth = 1
+            }
+        }
+        
     }
     
     func configButtonInfo(title: String, action: UIAction) {

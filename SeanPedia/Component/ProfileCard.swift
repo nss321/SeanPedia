@@ -20,7 +20,6 @@ final class ProfileCard: BaseView {
     private var buttonConfig = UIButton.Configuration.plain()
     private let rightChevron = UIImageView()
     
-    
     override func configHierarchy() {
         [profileContainer].forEach { addSubview($0) }
         [profileImageView, nicknameLabel, signupDateLabel, movieBoxButton, rightChevron].forEach { profileContainer.addSubview($0) }
