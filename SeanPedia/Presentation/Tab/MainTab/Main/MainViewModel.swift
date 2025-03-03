@@ -5,15 +5,12 @@
 //  Created by BAE on 2/11/25.
 //
 
+import RxSwift
+import RxCocoa
+
 final class MainViewModel: BaseViewModel {
     
-    var todayMovieList: [MovieInfo] {
-        if let movieList = output.todayMovie.value {
-            return movieList
-        }
-        return []
-    }
-    
+    let disposeBag = DisposeBag()
     var recentSearchKeywords: [String] {
         if let keywordList = output.keyword.value {
             return keywordList
@@ -22,15 +19,17 @@ final class MainViewModel: BaseViewModel {
     }
     
     struct Input {
-        let keyword: Observable<String?> = .init(nil)
-        let profile: Observable<Profile?> = .init(nil)
+        let keyword: CustomObservable<String?> = .init(nil)
+        let profile: CustomObservable<Profile?> = .init(nil)
     }
     
     struct Output {
-        let todayMovie: Observable<[MovieInfo]?> = .init(nil)
-        let keyword: Observable<[String]?> = .init(nil)
-        let profile: Observable<Profile?> = .init(nil)
+        let todayMovie: CustomObservable<[MovieInfo]?> = .init(nil)
+        let keyword: CustomObservable<[String]?> = .init(nil)
+        let profile: CustomObservable<Profile?> = .init(nil)
     }
+    
+    let todayMovieList2 =  BehaviorRelay<[MovieInfo]>(value: [])
     
     let input: Input
     let output: Output
@@ -41,6 +40,7 @@ final class MainViewModel: BaseViewModel {
         transform()
         fetchTodayMovieList()
         fetchKeywords()
+        print(#function, "MainViewModel init")
     }
     
     func transform() {
@@ -57,14 +57,24 @@ final class MainViewModel: BaseViewModel {
         }
     }
     
+    func transform2(input: Input) -> Output {
+        
+        return Output(
+            )
+    }
+    
     private func fetchTodayMovieList() {
-        NetworkService.shared.callPhotoRequest(
-            api: .trending,
-            type: TodayMovie.self) { [weak self] response in
-//                dump(response)
-                self?.output.todayMovie.value = response.results
-            } failureHandler: { _ in
+        NetworkService.shared.callMovieRequestWithSingle(api: .trending, type: TodayMovie.self)
+            .asObservable()
+            .bind(with: self) { owner, response in
+                switch response {
+                case .success(let result):
+                    owner.todayMovieList2.accept(result.results)
+                case .failure(let error):
+                    dump(error)
+                }
             }
+            .disposed(by: disposeBag)
     }
     
     private func fetchKeywords() {
@@ -84,7 +94,7 @@ final class MainViewModel: BaseViewModel {
     }
     
     func saveRecentSearch() {
-        let newValue = RecentSearch(keywords: recentSearchKeywords)
-        UserDefaultsManager.shared.setData(kind: .recentlyKeyword, type: RecentSearch.self, data: newValue)
+        let newValue = recentSearchKeywords
+        UserDefaultsManager.shared.recentSearchedKeywordList2 = newValue
     }
 }

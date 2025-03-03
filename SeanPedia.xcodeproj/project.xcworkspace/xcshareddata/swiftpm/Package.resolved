@@ -1,5 +1,5 @@
 {
-  "originHash" : "496b71547bf9745ab0b227316836cc5d5f2f5e0a00f2fefc40e9c3e38a8267d2",
+  "originHash" : "23f8c97d86ed3f4a286f3478529ab83c43001da8e448a1709ee005cea61672a1",
   "pins" : [
     {
       "identity" : "alamofire",
@@ -20,12 +20,12 @@
       }
     },
     {
-      "identity" : "skeletonview",
+      "identity" : "rxswift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Juanpe/SkeletonView",
+      "location" : "https://github.com/ReactiveX/RxSwift.git",
       "state" : {
-        "revision" : "2f5274827d310e32c09325dd3e0007120940988e",
-        "version" : "1.31.0"
+        "revision" : "5dd1907d64f0d36f158f61a466bab75067224893",
+        "version" : "6.9.0"
       }
     },
     {

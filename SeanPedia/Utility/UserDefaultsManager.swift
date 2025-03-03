@@ -61,6 +61,15 @@ final class UserDefaultsManager {
         }
     }
     
+    var recentSearchedKeywordList2: [String] {
+        get {
+            return userDefaults.stringArray(forKey: Key.recentlyKeyword.rawValue) ?? []
+        }
+        set {
+            userDefaults.set(newValue, forKey: Key.recentlyKeyword.rawValue)
+        }
+    }
+    
     var mbti: String {
         get {
             return userDefaults.string(forKey: Key.mbti.rawValue) ?? ""

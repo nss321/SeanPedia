@@ -6,7 +6,10 @@
 //
 
 import UIKit
+
 import Alamofire
+import RxSwift
+import RxCocoa
 
 enum TMDBRequest {
     case trending
@@ -40,12 +43,20 @@ enum TMDBRequest {
     }
 }
 
+enum APIError: String, Error {
+    case invalidQuery = "잘못된 쿼리입니다."
+    case unauthorizedAccess = "인증되지 않은 토큰입니다."
+    case notFound = "잘못된 요청입니다."
+    case systemError = "백엔드 잘못입니다."
+    case unknownResponse = "알 수 없는 오류입니다."
+}
+
 final class NetworkService {
     static let shared = NetworkService()
     
     private init () { }
     
-    func callPhotoRequest<T: Decodable>(
+    func callMovieRequest<T: Decodable>(
         api: TMDBRequest,
         type: T.Type,
         completion: @escaping(T) -> Void,
@@ -79,4 +90,41 @@ final class NetworkService {
             }
         }
     }
+    
+    func callMovieRequestWithSingle<T: Decodable>(
+        api: TMDBRequest,
+        type: T.Type
+    ) -> Single<Result<T, APIError>> {
+        return Single.create { value in
+            AF.request(api.endpoint, method: api.method, headers: api.header)
+                .validate(statusCode: 200...299)
+                .responseDecodable(of: T.self) { response in
+                    switch response.result {
+                    case .success(let result):
+                        dump(result)
+                        value(.success(.success(result)))
+                    case .failure(let error):
+                        if let status = response.response?.statusCode {
+                            switch status {
+                            case 400:
+                                value(.success(.failure(APIError.invalidQuery)))
+                            case 403:
+                                value(.success(.failure(APIError.unauthorizedAccess)))
+                            case 404:
+                                value(.success(.failure(APIError.notFound)))
+                            case 500:
+                                value(.success(.failure(APIError.systemError)))
+                            default:
+                                value(.success(.failure(APIError.unknownResponse)))
+                            }
+                        }
+                        dump(error)
+                    }
+                }
+            return Disposables.create {
+                print("영화 요청 끝")
+            }
+        }
+    }
+    
 }

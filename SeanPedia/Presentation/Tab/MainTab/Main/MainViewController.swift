@@ -7,10 +7,14 @@
 
 import UIKit
 
+import RxSwift
+import RxCocoa
+
 final class MainViewController: BaseViewController {
     
     private let mainView = MainView()
     private let viewModel = MainViewModel()
+    private let disposeBag = DisposeBag()
     
     override func loadView() {
         view = mainView
@@ -19,14 +23,12 @@ final class MainViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         NotificationCenter.default.addObserver(self, selector: #selector(receiveNoti), name: UIApplication.willResignActiveNotification, object: nil)
+        print(#function, "viewdidload!!!!")
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-//        print(#function, "메인 뷰컨 will appear")
         self.mainView.profileCard.updateProfileCard()
-//        print(UserDefaultsManager.shared.likedList)
-//        self.mainView.todayMovieCollectionView.reloadData()
         if viewModel.recentSearchKeywords.isEmpty {
             mainView.recentSearchCollectionView.isHidden = true
             mainView.noResult.isHidden = false
@@ -42,6 +44,17 @@ final class MainViewController: BaseViewController {
     }
     
     override func bind() {
+        let input = MainViewModel.Input()
+        let output = viewModel.transform2(input: input)
+        
+        viewModel.todayMovieList2
+            .asDriver()
+            .drive(mainView.todayMovieCollectionView.rx.items(cellIdentifier: TodayMovieCollectionViewCell.id, cellType: TodayMovieCollectionViewCell.self)) ({ row, element, cell in
+                cell.config(item: element)
+            })
+            .disposed(by: disposeBag)
+        
+        
         viewModel.output.todayMovie.bind { [weak self] _ in
             self?.mainView.todayMovieCollectionView.reloadData()
         }
@@ -56,6 +69,12 @@ final class MainViewController: BaseViewController {
                 print(#function, "failed to unwrapping profile. selected profile image didn't changed.")
             }
         }
+        
+        mainView.todayMovieCollectionView.rx.modelSelected(MovieInfo.self)
+            .bind(with: self) { owner, item in
+                print(item, "선택!!!")
+            }
+            .disposed(by: disposeBag)
     }
     
     override func configView() {
@@ -68,8 +87,6 @@ final class MainViewController: BaseViewController {
     override func configDelegate() {
         mainView.recentSearchCollectionView.delegate = self
         mainView.recentSearchCollectionView.dataSource = self
-        mainView.todayMovieCollectionView.delegate = self
-        mainView.todayMovieCollectionView.dataSource = self
     }
     
     override func configNavigation() {
@@ -107,8 +124,6 @@ extension MainViewController: UICollectionViewDataSource, UICollectionViewDelega
         switch collectionView {
         case mainView.recentSearchCollectionView:
             return viewModel.recentSearchKeywords.count
-        case mainView.todayMovieCollectionView:
-            return viewModel.todayMovieList.count
         default:
             return 0
         }
@@ -121,10 +136,6 @@ extension MainViewController: UICollectionViewDataSource, UICollectionViewDelega
             cell.config(title: viewModel.recentSearchKeywords[indexPath.item], action: UIAction(handler: { [weak self] _ in
                 self?.viewModel.popKeyword(index: indexPath.item)
             }))
-            return cell
-        case mainView.todayMovieCollectionView:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TodayMovieCollectionViewCell.id, for: indexPath) as! TodayMovieCollectionViewCell
-            cell.config(item: viewModel.todayMovieList[indexPath.item])
             return cell
         default:
             return UICollectionViewCell()
@@ -140,8 +151,6 @@ extension MainViewController: UICollectionViewDataSource, UICollectionViewDelega
             label.sizeToFit()
             let cellWidth = label.frame.width + CGFloat(smallMargin) * 4
             return CGSize(width: cellWidth, height: collectionView.frame.height)
-        case mainView.todayMovieCollectionView:
-            return CGSize(width: screenWidth / 2, height: collectionView.frame.height)
         default:
             return CGSize(width: 0, height: 0)
         }
@@ -151,8 +160,6 @@ extension MainViewController: UICollectionViewDataSource, UICollectionViewDelega
         switch collectionView {
         case mainView.recentSearchCollectionView:
             return CGFloat(smallMargin / 2)
-        case mainView.todayMovieCollectionView:
-            return CGFloat(mediumMargin)
         default:
             return 0
         }
@@ -163,14 +170,6 @@ extension MainViewController: UICollectionViewDataSource, UICollectionViewDelega
         case mainView.recentSearchCollectionView:
             let vc = SearchViewController()
             vc.viewModel.keyword = viewModel.recentSearchKeywords[indexPath.item]
-            self.navigationController?.pushViewController(vc, animated: true)
-            
-        case mainView.todayMovieCollectionView:
-            print("뷰컨 인스턴스 생성 전")
-            let vc = MovieDetailViewController()
-            print("뷰컨 인스턴스 생성 후")
-            vc.viewModel.input.selectedMovie.value = viewModel.todayMovieList[indexPath.item]
-            print("뷰모델에 셀렉트 무비 초기화")
             self.navigationController?.pushViewController(vc, animated: true)
         default:
             print(#function, collectionView)

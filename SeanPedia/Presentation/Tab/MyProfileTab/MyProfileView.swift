@@ -13,7 +13,7 @@ import Then
 final class MyProfileView: BaseView {
     
     let profileCard = ProfileCard()
-    let settingCollectionView = BaseCollectionView()
+    let settingCollectionView = BaseCollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     
     override func configHierarchy() {
         addSubview(profileCard)

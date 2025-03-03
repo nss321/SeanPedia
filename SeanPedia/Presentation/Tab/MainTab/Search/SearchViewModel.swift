@@ -25,14 +25,14 @@ final class SearchViewModel: BaseViewModel {
     }
     
     struct Input {
-        let givenKeyword: Observable<String?> = .init(nil)
-        let searchedResult: Observable<[MovieInfo]?> = .init(nil)
-        let typedKeyword: Observable<String?> = .init(nil)
+        let givenKeyword: CustomObservable<String?> = .init(nil)
+        let searchedResult: CustomObservable<[MovieInfo]?> = .init(nil)
+        let typedKeyword: CustomObservable<String?> = .init(nil)
     }
     
     struct Output {
-        let searchedResult: Observable<[MovieInfo]?> = .init(nil)
-        let isEmptyResult = Observable(false)
+        let searchedResult: CustomObservable<[MovieInfo]?> = .init(nil)
+        let isEmptyResult = CustomObservable(false)
     }
     
     let input: Input
@@ -66,7 +66,7 @@ final class SearchViewModel: BaseViewModel {
     }
     
     private func fetchSearchResult(keyword: String) {
-        NetworkService.shared.callPhotoRequest(api: .search(query: keyword), type: Search.self) { [weak self] Search in
+        NetworkService.shared.callMovieRequest(api: .search(query: keyword), type: Search.self) { [weak self] Search in
             self?.input.searchedResult.value = Search.results
             self?.page = Search.page
             self?.totalPages = Search.total_pages
@@ -79,7 +79,7 @@ final class SearchViewModel: BaseViewModel {
     func prefetchItems(indexPath: IndexPath) {
         if currentIndex - 3 == indexPath.item && page < totalPages {
             page += 1
-            NetworkService.shared.callPhotoRequest(api: .search(query: keyword, page: page), type: Search.self, completion: { [weak self] Search in
+            NetworkService.shared.callMovieRequest(api: .search(query: keyword, page: page), type: Search.self, completion: { [weak self] Search in
                 dump(Search.results)
                 self?.output.searchedResult.value?.append(contentsOf: Search.results)
             }, failureHandler: {
@@ -89,7 +89,7 @@ final class SearchViewModel: BaseViewModel {
     }
     
     private func callSearchRequest(keyword: String) {
-        NetworkService.shared.callPhotoRequest(api: .search(query: keyword), type: Search.self) { [weak self] Search in
+        NetworkService.shared.callMovieRequest(api: .search(query: keyword), type: Search.self) { [weak self] Search in
             print(#function, Search)
             if Search.results.isEmpty {
                 self?.output.isEmptyResult.value = true

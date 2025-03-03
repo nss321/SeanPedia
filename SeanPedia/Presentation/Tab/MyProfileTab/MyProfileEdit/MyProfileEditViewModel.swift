@@ -10,12 +10,12 @@ import Foundation
 final class MyProfileEditViewModel {
     let navigationTitle = "프로필 편집"
     
-    let inputTextField: Observable<String?> = Observable(nil)
-    let outputValidationText = Observable("")
-    let outputIsValid = Observable(false)
+    let inputTextField: CustomObservable<String?> = CustomObservable(nil)
+    let outputValidationText = CustomObservable("")
+    let outputIsValid = CustomObservable(false)
     
-    let profile: Observable<Profile?> = Observable(nil)
-    let inputSaveButtonTapped: Observable<Void> = Observable(())
+    let profile: CustomObservable<Profile?> = CustomObservable(nil)
+    let inputSaveButtonTapped: CustomObservable<Void> = CustomObservable(())
     
     init() {
         inputTextField.bind { [weak self] _ in

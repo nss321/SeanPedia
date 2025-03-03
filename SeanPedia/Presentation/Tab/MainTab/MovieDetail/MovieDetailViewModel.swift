@@ -30,15 +30,15 @@ final class MovieDetailViewModel: BaseViewModel {
     }
     
     struct Input {
-        let selectedMovie: Observable<MovieInfo?> = .init(nil)
-        let movieId: Observable<Int?> = .init(nil)
-        let isLiked: Observable<Bool?> = .init(nil)
+        let selectedMovie: CustomObservable<MovieInfo?> = .init(nil)
+        let movieId: CustomObservable<Int?> = .init(nil)
+        let isLiked: CustomObservable<Bool?> = .init(nil)
     }
     struct Output {
-        let selectedMovie: Observable<MovieInfo?> = .init(nil)
-        let movieImage: Observable<Images?> = .init(nil)
-        let castingList: Observable<[CastInfo]?> = .init(nil)
-        let isLiked: Observable<Bool?> = .init(nil)
+        let selectedMovie: CustomObservable<MovieInfo?> = .init(nil)
+        let movieImage: CustomObservable<Images?> = .init(nil)
+        let castingList: CustomObservable<[CastInfo]?> = .init(nil)
+        let isLiked: CustomObservable<Bool?> = .init(nil)
     }
     
     let input: Input
@@ -83,7 +83,7 @@ final class MovieDetailViewModel: BaseViewModel {
     }
     
     func callMovieImagesRequest(id: Int) {
-        NetworkService.shared.callPhotoRequest(api: .images(id: id), type: Images.self) { [weak self] response in
+        NetworkService.shared.callMovieRequest(api: .images(id: id), type: Images.self) { [weak self] response in
             self?.output.movieImage.value = response
         } failureHandler: { TMDBError in
             dump(TMDBError)
@@ -91,7 +91,7 @@ final class MovieDetailViewModel: BaseViewModel {
     }
     
     func callCreditRequest(id: Int) {
-        NetworkService.shared.callPhotoRequest(api: .credit(id: id), type: Credit.self) { [weak self] Credit in
+        NetworkService.shared.callMovieRequest(api: .credit(id: id), type: Credit.self) { [weak self] Credit in
             self?.output.castingList.value = Credit.cast
         } failureHandler: { TMDBError in
             dump(TMDBError)

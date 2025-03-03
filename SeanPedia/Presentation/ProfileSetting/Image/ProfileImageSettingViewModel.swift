@@ -14,11 +14,11 @@ final class ProfileImageSettingViewModel: BaseViewModel {
     var dismissCompletion: ((String) -> Void)?
     
     struct Input {
-        let selectedImage: Observable<String?> = .init(nil)
+        let selectedImage: CustomObservable<String?> = .init(nil)
     }
     
     struct Output {
-        let selectedImage: Observable<String?> = .init(nil)
+        let selectedImage: CustomObservable<String?> = .init(nil)
     }
     
     let input: Input

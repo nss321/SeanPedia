@@ -6,7 +6,7 @@
 //
 
 final class MyProfileViewModel {
-    let profile: Observable<Profile?> = Observable(nil)
+    let profile: CustomObservable<Profile?> = CustomObservable(nil)
     
     init() {
         

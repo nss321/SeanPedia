@@ -49,11 +49,10 @@ final class TodayMovieCollectionViewCell: BaseCollectionViewCell {
         movieNameLabel.snp.makeConstraints {
             $0.top.equalTo(posterImage.snp.bottom).offset(smallMargin)
             $0.leading.equalToSuperview()
-            
         }
         movieSummaryLabel.snp.makeConstraints {
             $0.top.equalTo(movieNameLabel.snp.bottom).offset(smallMargin)
-            $0.leading.trailing.equalToSuperview()
+            $0.horizontalEdges.equalToSuperview()
             $0.bottom.lessThanOrEqualToSuperview()
         }
         likeButton.snp.makeConstraints {
@@ -91,6 +90,7 @@ final class TodayMovieCollectionViewCell: BaseCollectionViewCell {
     }
     
     func config(item: MovieInfo) {
+        print(#function, item.title, "config!!")
         if let url = URL(string: Urls.w154Poster() + item.poster_path)  {
             posterImage.kf.setImage(with: url)
         } else {

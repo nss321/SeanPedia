@@ -16,15 +16,15 @@ final class ProfileNicknameViewModel: BaseViewModel {
     var currentMBTI = Array(repeating: "", count: 4)
     
     struct Input {
-        let textField: Observable<String?> = .init(nil)
-        let completeButtonTapped: Observable<Profile?> = .init(nil)
-        let checkValidation: Observable<Void?> = .init(())
+        let textField: CustomObservable<String?> = .init(nil)
+        let completeButtonTapped: CustomObservable<Profile?> = .init(nil)
+        let checkValidation: CustomObservable<Void?> = .init(())
     }
     
     struct Output {
-        let validationText = Observable("")
-        let isValid = Observable(false)
-        let completeButtonTapped: Observable<Void?> = .init(nil)
+        let validationText = CustomObservable("")
+        let isValid = CustomObservable(false)
+        let completeButtonTapped: CustomObservable<Void?> = .init(nil)
     }
     
     let input: Input

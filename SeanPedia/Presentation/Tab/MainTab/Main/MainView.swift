@@ -15,10 +15,10 @@ final class MainView: BaseView {
     let profileCard = ProfileCard()
     let recentSearchLabel = UILabel()
     let deleteSearchingHistoryButton = UIButton()
-    let recentSearchCollectionView = BaseCollectionView()
+    let recentSearchCollectionView = BaseCollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     let recentSearchNotiLabel = UILabel()
     let todayMovieLabel = UILabel()
-    let todayMovieCollectionView = BaseCollectionView()
+    lazy var todayMovieCollectionView = BaseCollectionView(frame: .zero, collectionViewLayout: layout())
     let noResult = UILabel()
     
     override func configHierarchy() {
@@ -113,9 +113,9 @@ final class MainView: BaseView {
         todayMovieCollectionView.do {
             $0.register(TodayMovieCollectionViewCell.self, forCellWithReuseIdentifier: TodayMovieCollectionViewCell.id)
             $0.contentInset = UIEdgeInsets(top: 0, left: CGFloat(mediumMargin), bottom: 0, right: CGFloat(mediumMargin))
-            let layout = UICollectionViewFlowLayout()
-            layout.scrollDirection = .horizontal
-            $0.collectionViewLayout = layout
+//            let layout = UICollectionViewFlowLayout()
+//            layout.scrollDirection = .horizontal
+//            $0.collectionViewLayout = layout
         }
         noResult.do {
             $0.text = "최근 검색어 내역이 없습니다."
@@ -123,5 +123,13 @@ final class MainView: BaseView {
             $0.textColor = .seanPediaGray
             $0.isHidden = true
         }
+    }
+    
+    private func layout() -> UICollectionViewLayout {
+        let layout = UICollectionViewFlowLayout()
+        layout.itemSize = CGSize(width: screenWidth / 2, height: screenHeight * 0.46)
+        layout.scrollDirection = .horizontal
+        layout.minimumInteritemSpacing = CGFloat(mediumMargin)
+        return layout
     }
 }
