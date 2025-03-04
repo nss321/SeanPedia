@@ -29,13 +29,6 @@ final class MainViewController: BaseViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.mainView.profileCard.updateProfileCard()
-        if viewModel.recentSearchKeywords.isEmpty {
-            mainView.recentSearchCollectionView.isHidden = true
-            mainView.noResult.isHidden = false
-        } else {
-            mainView.recentSearchCollectionView.isHidden = false
-            mainView.noResult.isHidden = true
-        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -46,16 +39,33 @@ final class MainViewController: BaseViewController {
     override func bind() {
         viewModel.todayMovieList2
             .asDriver()
-            .drive(
-                mainView.todayMovieCollectionView.rx.items(cellIdentifier: TodayMovieCollectionViewCell.id, cellType: TodayMovieCollectionViewCell.self)) ({ _, element, cell in
+            .drive(mainView.todayMovieCollectionView.rx.items(cellIdentifier: TodayMovieCollectionViewCell.id, cellType: TodayMovieCollectionViewCell.self)) ({ _, element, cell in
                 cell.config(item: element)
             })
             .disposed(by: disposeBag)
         
-        viewModel.output.keyword.bind { [weak self] _ in
-            self?.mainView.recentSearchCollectionView.reloadData()
-            
-        }
+        viewModel.recentSearched
+            .asDriver()
+            .drive(mainView.recentSearchCollectionView.rx.items(cellIdentifier: RecentSearchCollectionViewCell.id, cellType: RecentSearchCollectionViewCell.self)) ({ _, element, cell in
+                print("최근 검색어 목록:", element)
+                cell.config(title: element, action: UIAction(handler: { _ in
+                    print(element, "delete!!")
+                }))
+            })
+            .disposed(by: disposeBag)
+        
+        viewModel.recentSearched
+            .asDriver()
+            .map { return $0.isEmpty }
+            .drive(with: self) { owner, value in
+                owner.mainView.recentSearchCollectionView.isHidden = value
+                owner.mainView.noResult.isHidden = !value
+            }
+            .disposed(by: disposeBag)
+        
+        mainView.recentSearchCollectionView.rx.setDelegate(self)
+            .disposed(by: disposeBag)
+        
         viewModel.output.profile.lazyBind { [weak self] profile in
             if let profile {
                 self?.mainView.profileCard.setProfileCard(profile: profile)
@@ -63,11 +73,19 @@ final class MainViewController: BaseViewController {
                 print(#function, "failed to unwrapping profile. selected profile image didn't changed.")
             }
         }
+        
         mainView.todayMovieCollectionView.rx.modelSelected(MovieInfo.self)
             .bind(with: self) { owner, item in
                 print(item, "선택!!!")
             }
             .disposed(by: disposeBag)
+        
+        mainView.recentSearchCollectionView.rx.modelSelected(String.self)
+            .bind(with: self) { owner, item in
+                print("\(item) selected!!")
+            }
+            .disposed(by: disposeBag)
+        
     }
     
     override func configView() {
@@ -77,11 +95,6 @@ final class MainViewController: BaseViewController {
         }), for: .touchUpInside)
     }
     
-    override func configDelegate() {
-        mainView.recentSearchCollectionView.delegate = self
-        mainView.recentSearchCollectionView.dataSource = self
-    }
-    
     override func configNavigation() {
         navigationItem.title = "오늘의 영화"
         navigationItem.rightBarButtonItem = UIBarButtonItem(
@@ -89,7 +102,13 @@ final class MainViewController: BaseViewController {
             primaryAction: UIAction(handler: { [weak self] _ in
                 let vc = SearchViewController()
                 vc.viewModel.completion = { [weak self] keyword in
-                    self?.viewModel.input.keyword.value = keyword
+//                    self?.viewModel.input.keyword.value = keyword
+                    Observable.just(keyword)
+                        .bind(with: self!) { owner, keyword in
+                            let origin = owner.viewModel.recentSearched.value
+                            owner.viewModel.recentSearched.accept(origin + [keyword])
+                        }
+                        .disposed(by: self!.disposeBag)
                 }
                 self?.navigationController?.pushViewController(vc, animated: true)
             }))
@@ -112,35 +131,15 @@ final class MainViewController: BaseViewController {
     }
 }
 
-extension MainViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.recentSearchKeywords.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecentSearchCollectionViewCell.id, for: indexPath) as! RecentSearchCollectionViewCell
-        cell.config(title: viewModel.recentSearchKeywords[indexPath.item], action: UIAction(handler: { [weak self] _ in
-            self?.viewModel.popKeyword(index: indexPath.item)
-        }))
-        return cell
-    }
-    
+extension MainViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let label = UILabel(frame: .zero)
-        label.text = viewModel.recentSearchKeywords[indexPath.item]
+//        label.text = viewModel.recentSearchKeywords[indexPath.item]
+        label.text = viewModel.recentSearched.value[indexPath.item]
         label.font = .systemFont(ofSize: 14)
         label.sizeToFit()
         let cellWidth = label.frame.width + CGFloat(smallMargin) * 4
+        
         return CGSize(width: cellWidth, height: collectionView.frame.height)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return CGFloat(smallMargin / 2)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let vc = SearchViewController()
-        vc.viewModel.keyword = viewModel.recentSearchKeywords[indexPath.item]
-        self.navigationController?.pushViewController(vc, animated: true)
     }
 }

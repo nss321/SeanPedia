@@ -65,9 +65,6 @@ final class NetworkService {
         AF.request(api.endpoint,
                    method: api.method,
                    headers: api.header)
-//        .responseString(completionHandler: { response in
-//            debugPrint(response)
-//        })
         .responseDecodable(of: T.self) { response in
 //            debugPrint(response)
             switch response.result {
@@ -101,7 +98,7 @@ final class NetworkService {
                 .responseDecodable(of: T.self) { response in
                     switch response.result {
                     case .success(let result):
-                        dump(result)
+//                        dump(result)
                         value(.success(.success(result)))
                     case .failure(let error):
                         if let status = response.response?.statusCode {

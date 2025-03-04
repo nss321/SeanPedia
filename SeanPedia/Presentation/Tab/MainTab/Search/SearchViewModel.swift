@@ -90,7 +90,7 @@ final class SearchViewModel: BaseViewModel {
     
     private func callSearchRequest(keyword: String) {
         NetworkService.shared.callMovieRequest(api: .search(query: keyword), type: Search.self) { [weak self] Search in
-            print(#function, Search)
+//            print(#function, Search)
             if Search.results.isEmpty {
                 self?.output.isEmptyResult.value = true
             } else {

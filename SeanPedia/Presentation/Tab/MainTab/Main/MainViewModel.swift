@@ -41,7 +41,6 @@ final class MainViewModel: BaseViewModel {
         transform()
         fetchTodayMovieList()
         fetchKeywords()
-        print(#function, "MainViewModel init")
     }
     
     func transform() {
@@ -90,11 +89,17 @@ final class MainViewModel: BaseViewModel {
     }
     
     func removeAllofKeyword() {
-        output.keyword.value?.removeAll()
+        Observable<[String]>.just([])
+            .bind(with: self) { owner, empty in
+                owner.recentSearched.accept(empty)
+            }
+            .disposed(by: disposeBag)
+//        recentSearched.value.removeAll()
     }
     
     func saveRecentSearch() {
-        let newValue = recentSearchKeywords
+        let newValue = recentSearched.value
+        print(#function, newValue)
         UserDefaultsManager.shared.recentSearchedKeywordList2 = newValue
     }
 }

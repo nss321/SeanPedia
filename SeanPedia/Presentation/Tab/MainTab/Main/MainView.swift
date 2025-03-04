@@ -113,9 +113,6 @@ final class MainView: BaseView {
         todayMovieCollectionView.do {
             $0.register(TodayMovieCollectionViewCell.self, forCellWithReuseIdentifier: TodayMovieCollectionViewCell.id)
             $0.contentInset = UIEdgeInsets(top: 0, left: CGFloat(mediumMargin), bottom: 0, right: CGFloat(mediumMargin))
-//            let layout = UICollectionViewFlowLayout()
-//            layout.scrollDirection = .horizontal
-//            $0.collectionViewLayout = layout
         }
         noResult.do {
             $0.text = "최근 검색어 내역이 없습니다."
@@ -123,23 +120,6 @@ final class MainView: BaseView {
             $0.textColor = .seanPediaGray
             $0.isHidden = true
         }
-    }
-    
-    private func recentSearchedLayout() -> UICollectionViewLayout {
-        let layout = UICollectionViewFlowLayout()
-        
-//        let label = UILabel(frame: .zero)
-//        label.text = viewModel.recentSearchKeywords[indexPath.item]
-//        label.font = .systemFont(ofSize: 14)
-//        label.sizeToFit()
-//        let cellWidth = label.frame.width + CGFloat(smallMargin) * 4
-//        return CGSize(width: cellWidth, height: collectionView.frame.height)
-        
-        
-        layout.itemSize = CGSize(width: screenWidth / 2, height: screenHeight * 0.46)
-        layout.scrollDirection = .horizontal
-        layout.minimumInteritemSpacing = CGFloat(smallMargin / 2)
-        return layout
     }
     
     private func todayMovieLayout() -> UICollectionViewLayout {
